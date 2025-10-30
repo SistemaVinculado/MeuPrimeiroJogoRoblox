@@ -1,0 +1,30 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-md flex flex-col bg-slate-800 border-pixel border-pixel-yellow p-6 text-gray-300 gap-4 text-center">
+      <!-- Header -->
+      <h2 class="text-2xl text-yellow-400">Use Item</h2>
+  
+      <!-- Content -->
+      <div class="my-4 min-h-[50px]">
+        @if (usableItems().length > 0) {
+          <div class="flex flex-col gap-2">
+            @for (item of usableItems(); track item.id + item.inventoryIndex) {
+              <button (click)="useItem(item.inventoryIndex)" class="py-2 px-4 btn-pixel btn-pixel-slate text-lg w-full">
+                {{ item.name }}
+              </button>
+            }
+          </div>
+        } @else {
+           <p class="text-base text-gray-400 leading-relaxed">No usable items in combat.</p>
+        }
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex justify-center gap-4">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-slate text-lg">
+          Cancel
+        </button>
+      </div>
+    </div>
+</div>

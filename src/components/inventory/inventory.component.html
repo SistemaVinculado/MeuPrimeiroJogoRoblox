@@ -1,0 +1,248 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  @if (player(); as p) {
+    <!-- Modal Panel -->
+    <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <div class="flex items-baseline gap-4">
+            <h2 class="text-2xl sm:text-3xl text-theme-primary">INVENTORY</h2>
+            <p class="text-lg">Gold: <span class="text-theme-primary">{{ playerGold() }} G</span></p>
+        </div>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-grow flex flex-col md:flex-row gap-6 overflow-hidden">
+        <!-- Left Column: Equipment & Bag -->
+        <div class="w-full md:w-3/5 flex flex-col gap-6 overflow-y-auto pr-2">
+          <!-- Class Selection -->
+          <div>
+              <h3 class="text-sm text-gray-400 mb-2">CLASS</h3>
+              <div class="flex items-center gap-2">
+                  <button (click)="setClass('Warrior')"
+                          class="px-6 py-2 text-lg btn-pixel"
+                          [class]="selectedClass() === 'Warrior' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+                      Warrior
+                  </button>
+                  <button (click)="setClass('Mage')"
+                          class="px-6 py-2 text-lg btn-pixel"
+                          [class]="selectedClass() === 'Mage' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+                      Mage
+                  </button>
+              </div>
+          </div>
+
+          <!-- Equipped Items -->
+          <div>
+              <h3 class="text-sm text-gray-400 mb-2">EQUIPPED</h3>
+              <div class="flex justify-center">
+                  <div class="grid grid-cols-3 gap-2 w-72">
+                      <!-- Row 1 -->
+                      <button (click)="equipment().weapon && togglePinItem(equipment().weapon!, 'equipment', 'weapon')" (mouseenter)="setHoveredItem(equipment().weapon)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().weapon" [class]="equipment().weapon ? rarityBorderColors[equipment().weapon!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().weapon?.isPrimal" [title]="equipment().weapon ? (equipment().weapon!.name + (equipment().weapon!.level ? ' (Lvl. ' + equipment().weapon!.level + ')' : '')) : 'Weapon Slot'">@if(equipment().weapon; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Weapon</span>}</button>
+                      <button (click)="equipment().helmet && togglePinItem(equipment().helmet!, 'equipment', 'helmet')" (mouseenter)="setHoveredItem(equipment().helmet)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().helmet" [class]="equipment().helmet ? rarityBorderColors[equipment().helmet!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().helmet?.isPrimal" [title]="equipment().helmet ? (equipment().helmet!.name + (equipment().helmet!.level ? ' (Lvl. ' + equipment().helmet!.level + ')' : '')) : 'Helmet Slot'">@if(equipment().helmet; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Helmet</span>}</button>
+                      <button (click)="equipment().shield && togglePinItem(equipment().shield!, 'equipment', 'shield')" (mouseenter)="setHoveredItem(equipment().shield)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().shield" [class]="equipment().shield ? rarityBorderColors[equipment().shield!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().shield?.isPrimal" [title]="equipment().shield ? (equipment().shield!.name + (equipment().shield!.level ? ' (Lvl. ' + equipment().shield!.level + ')' : '')) : 'Shield Slot'">@if(equipment().shield; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Shield</span>}</button>
+                      
+                      <!-- Row 2 -->
+                      <button (click)="equipment().gloves && togglePinItem(equipment().gloves!, 'equipment', 'gloves')" (mouseenter)="setHoveredItem(equipment().gloves)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().gloves" [class]="equipment().gloves ? rarityBorderColors[equipment().gloves!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().gloves?.isPrimal" [title]="equipment().gloves ? (equipment().gloves!.name + (equipment().gloves!.level ? ' (Lvl. ' + equipment().gloves!.level + ')' : '')) : 'Gloves Slot'">@if(equipment().gloves; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Gloves</span>}</button>
+                      <button (click)="equipment().armor && togglePinItem(equipment().armor!, 'equipment', 'armor')" (mouseenter)="setHoveredItem(equipment().armor)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().armor" [class]="equipment().armor ? rarityBorderColors[equipment().armor!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().armor?.isPrimal" [title]="equipment().armor ? (equipment().armor!.name + (equipment().armor!.level ? ' (Lvl. ' + equipment().armor!.level + ')' : '')) : 'Armor Slot'">@if(equipment().armor; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Armor</span>}</button>
+                      <button (click)="equipment().boots && togglePinItem(equipment().boots!, 'equipment', 'boots')" (mouseenter)="setHoveredItem(equipment().boots)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().boots" [class]="equipment().boots ? rarityBorderColors[equipment().boots!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().boots?.isPrimal" [title]="equipment().boots ? (equipment().boots!.name + (equipment().boots!.level ? ' (Lvl. ' + equipment().boots!.level + ')' : '')) : 'Boots Slot'">@if(equipment().boots; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Boots</span>}</button>
+                      
+                      <!-- Row 3 -->
+                      <button (click)="equipment().ring1 && togglePinItem(equipment().ring1!, 'equipment', 'ring1')" (mouseenter)="setHoveredItem(equipment().ring1)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().ring1" [class]="equipment().ring1 ? rarityBorderColors[equipment().ring1!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().ring1?.isPrimal" [title]="equipment().ring1 ? (equipment().ring1!.name + (equipment().ring1!.level ? ' (Lvl. ' + equipment().ring1!.level + ')' : '')) : 'Ring 1 Slot'">@if(equipment().ring1; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Ring 1</span>}</button>
+                      <button (click)="equipment().amulet && togglePinItem(equipment().amulet!, 'equipment', 'amulet')" (mouseenter)="setHoveredItem(equipment().amulet)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().amulet" [class]="equipment().amulet ? rarityBorderColors[equipment().amulet!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().amulet?.isPrimal" [title]="equipment().amulet ? (equipment().amulet!.name + (equipment().amulet!.level ? ' (Lvl. ' + equipment().amulet!.level + ')' : '')) : 'Amulet Slot'">@if(equipment().amulet; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Amulet</span>}</button>
+                      <button (click)="equipment().ring2 && togglePinItem(equipment().ring2!, 'equipment', 'ring2')" (mouseenter)="setHoveredItem(equipment().ring2)" (mouseleave)="setHoveredItem(null)" class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class.border-yellow-500]="pinnedItem()?.item === equipment().ring2" [class]="equipment().ring2 ? rarityBorderColors[equipment().ring2!.rarity] : 'border-slate-700'" [class.animate-primal-glow]="equipment().ring2?.isPrimal" [title]="equipment().ring2 ? (equipment().ring2!.name + (equipment().ring2!.level ? ' (Lvl. ' + equipment().ring2!.level + ')' : '')) : 'Ring 2 Slot'">@if(equipment().ring2; as item){<span>{{item.name}}</span>@if(item.upgradeLevel){<div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">+{{item.upgradeLevel}}</div>}}@else{<span class="text-gray-500 uppercase">Ring 2</span>}</button>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Bag -->
+          <div class="flex flex-col">
+              <div class="flex justify-between items-center mb-2">
+                  <h3 class="text-sm text-gray-400">BAG ({{ bagCount() }} / {{ maxBagCount() }})</h3>
+                   <div class="flex items-center gap-2">
+                      <button (click)="setSortBy('rarity')" class="px-2 py-0.5 btn-pixel btn-pixel-secondary text-xs" [class.btn-pixel-primary]="sortBy() === 'rarity'">Rarity</button>
+                      <button (click)="setSortBy('score')" class="px-2 py-0.5 btn-pixel btn-pixel-secondary text-xs" [class.btn-pixel-primary]="sortBy() === 'score'">Score</button>
+                      <button (click)="setSortBy('type')" class="px-2 py-0.5 btn-pixel btn-pixel-secondary text-xs" [class.btn-pixel-primary]="sortBy() === 'type'">Type</button>
+                      <button (click)="equipBest()" class="px-3 py-1 btn-pixel btn-pixel-success text-sm">
+                        Equip Best
+                      </button>
+                   </div>
+              </div>
+              <div class="bg-black/40 border-2 border-slate-700 rounded-md p-4">
+                  @if (inventory().length > 0) {
+                      <div class="grid grid-cols-8 gap-3">
+                          @for(item of sortedInventory(); track item.id + $index; let i = $index) {
+                              <button (click)="togglePinItem(item, 'inventory', i)" 
+                                      (mouseenter)="setHoveredItem(item)"
+                                      (mouseleave)="setHoveredItem(null)"
+                                      class="relative aspect-square bg-slate-900/50 border rounded-md flex items-center justify-center p-1 text-center text-xs hover:border-yellow-400 transition-colors"
+                                      [class.border-yellow-500]="pinnedItem()?.item === item && pinnedItem()?.indexOrSlot === i"
+                                      [class]="rarityBorderColors[item.rarity]"
+                                      [class.grayscale]="!isItemClassCompatible(item)"
+                                      [class.animate-primal-glow]="item.isPrimal"
+                                      [title]="(isItemClassCompatible(item) ? item.name : 'Requires ' + item.playerClass + ' class') + (item.level ? ' (Lvl. ' + item.level + ')' : '')">
+                                  {{ item.name.split(' ')[0] }}
+                                  @if(item.isJunk) {
+                                    <div class="absolute top-0 right-0 w-4 h-4 bg-red-600/80 text-white flex items-center justify-center rounded-bl-md rounded-tr-sm">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                  }
+                                  @if (item.upgradeLevel) {
+                                    <div class="absolute -top-1 -right-1 px-1 bg-purple-600 text-white text-xs rounded-full border-2 border-slate-800">
+                                      +{{ item.upgradeLevel }}
+                                    </div>
+                                  }
+                              </button>
+                          }
+                      </div>
+                  } @else {
+                      <div class="flex items-center justify-center h-full">
+                          <p class="text-gray-500 italic">Your bag is empty.</p>
+                      </div>
+                  }
+              </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Details Panel -->
+        <div class="w-full md:w-2/5 bg-gradient-to-t from-slate-900 to-black/40 border-2 border-slate-700 rounded-md p-4 flex flex-col">
+            @if (itemForDetails(); as item) {
+                <!-- Non-scrollable Header -->
+                <div>
+                  <div class="flex justify-between items-baseline">
+                    <h3 class="text-xl text-theme-primary">{{ item.name }} @if(item.upgradeLevel) { +{{ item.upgradeLevel }} }</h3>
+                    <p class="text-lg font-bold" [style.color]="rarityColors[item.rarity]">{{ item.rarity }}</p>
+                  </div>
+                   @if (item.level) {
+                    <p class="text-sm text-gray-400">Item Level: {{ item.level }}</p>
+                  }
+                  @if (item.playerClass && item.playerClass !== 'All') {
+                    <p class="text-sm" [class]="item.playerClass === p.playerClass ? 'text-gray-400' : 'text-red-400'">
+                      Requires: {{ item.playerClass }}
+                    </p>
+                  }
+                  <p class="text-sm text-gray-400 italic mt-2">{{ item.description }}</p>
+                   @if (itemGearScore() > 0) {
+                      <p class="text-md text-purple-400 mt-2">Gear Score: <span class="font-bold">{{ itemGearScore() }}</span></p>
+                    }
+                </div>
+
+                <div class="my-4 border-t border-slate-600"></div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-grow min-h-0 overflow-y-auto pr-2">
+                  <!-- Stats Section -->
+                  @if(item.stats) {
+                    <div class="space-y-1 text-base">
+                      @for(stat of objectKeys(item.stats); track $index) {
+                         <p>+{{ item.stats[stat] }} {{ stat.replace('max', 'Max ') }}</p>
+                      }
+                    </div>
+                  }
+
+                  <!-- Perks Section -->
+                  @if (item.perks && item.perks.length > 0) {
+                    <div class="mt-2 space-y-1 text-base">
+                        @for (perk of item.perks; track $index) {
+                          @if (perk.type === 'skill_enhance') {
+                            <p class="text-cyan-400">{{ perk.description }}</p>
+                          } @else {
+                            <p class="text-purple-400">
+                              Lv. {{perk.level}} Perk: +{{ perk.value }}% 
+                              @switch(perk.type) {
+                                @case('maxHp') { Max HP }
+                                @case('maxEn') { Max Energy }
+                                @case('attack') { Attack }
+                                @case('defense') { Defense }
+                                @case('critDamage') { Crit Damage }
+                              }
+                            </p>
+                          }
+                        }
+                    </div>
+                  }
+
+                   <!-- Set Bonus Section -->
+                  @if(item.setName) {
+                      <div class="mt-4">
+                          <h4 class="text-md text-green-400">{{ item.setName }}</h4>
+                          @if (item.setBonusDescription) {
+                              @for (line of item.setBonusDescription.split('\n'); track $index) {
+                                  <p class="text-sm text-gray-400" [class.text-green-300]="isSetBonusActive(item.setName, $index + 1)">{{ line }}</p>
+                              }
+                          }
+                      </div>
+                  }
+
+                  <!-- Exotic Effect Section -->
+                  @if (item.exoticEffect) {
+                      <div class="mt-4 p-3 bg-yellow-900/30 border border-yellow-500/50 rounded-md">
+                          <p class="text-yellow-300">{{ item.exoticEffect.description }}</p>
+                      </div>
+                  }
+
+                  <!-- Potion Effect -->
+                  @if(item.effect) {
+                    <p class="text-base text-green-400 mt-4">Restores {{ item.effect.percentage }}% Max HP</p>
+                  }
+
+                  <!-- Comparison Section -->
+                  @if (itemComparison(); as comparison) {
+                    <div class="mt-4">
+                      <h4 class="text-lg text-gray-400 mb-2">Comparison</h4>
+                      <div class="space-y-1 bg-slate-900/50 p-3 rounded-md">
+                        @for (stat of comparison; track stat.statName) {
+                          <div class="flex justify-between items-baseline">
+                            <span>{{ stat.statName }}</span>
+                            <span [class]="getStatClass(stat.diff)">
+                              {{ stat.selected }} ({{ stat.diff > 0 ? '+' : '' }}{{ stat.diff }})
+                            </span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- ACTION BUTTON: Only shows for the pinned item -->
+                @if (pinnedItem()?.item === item) {
+                    <div class="pt-4 flex gap-2">
+                        @let pin = pinnedItem()!;
+                        @if (pin.source === 'inventory') {
+                            <button (click)="toggleJunkStatus()" class="w-1/3 py-2 btn-pixel btn-pixel-secondary text-lg">
+                                {{ item.isJunk ? 'Un-Junk' : 'Junk' }}
+                            </button>
+                            @if (['potion', 'consumable'].includes(item.type)) {
+                                <button (click)="performPinnedItemAction()" class="w-2/3 py-2 btn-pixel btn-pixel-success text-lg">Use</button>
+                            } @else {
+                                <button (click)="performPinnedItemAction()" [disabled]="item.playerClass !== 'All' && item.playerClass !== p.playerClass" class="w-2/3 py-2 btn-pixel btn-pixel-success text-lg">Equip</button>
+                            }
+                        } @else if (pin.source === 'equipment') {
+                            <button (click)="performPinnedItemAction()" class="w-full py-2 btn-pixel btn-pixel-danger text-lg">Unequip</button>
+                        }
+                    </div>
+                }
+            } @else {
+              <div class="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mb-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <p>Click an item to pin it.</p>
+                <p>Hover to see details & comparison.</p>
+              </div>
+            }
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  }
+</div>

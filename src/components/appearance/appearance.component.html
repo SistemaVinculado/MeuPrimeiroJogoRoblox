@@ -1,0 +1,169 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  <!-- Modal Panel -->
+  <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-cyan-900/40 via-gray-800 to-gray-900 border-pixel border-pixel-info p-4 md:p-6 text-gray-300 gap-4">
+    <!-- Header -->
+    <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+      <h2 class="text-3xl text-theme-info">APPEARANCE</h2>
+      <div class="flex items-center gap-4">
+        <p class="text-lg">(D) <span class="text-theme-info">{{ playerDiamonds() }}</span></p>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex-shrink-0 flex items-center self-start">
+      <button 
+        (click)="setTab('shop')"
+        class="px-4 py-1 text-lg btn-pixel"
+        [class]="currentTab() === 'shop' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+        Shop
+      </button>
+      <button 
+        (click)="setTab('wardrobe')"
+        class="px-4 py-1 text-lg btn-pixel"
+        [class]="currentTab() === 'wardrobe' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+        Wardrobe
+      </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="flex-grow overflow-hidden pr-2">
+      @if (currentTab() === 'shop') {
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto h-full">
+          @for (item of appearanceItems; track item.id) {
+            <div class="bg-gradient-to-b from-slate-900/50 to-slate-800/50 border border-slate-700 rounded-md p-3 flex flex-col text-center">
+              <h3 class="text-4xl font-bold">{{ item.abbreviatedName }}</h3>
+              <p class="mt-1 font-semibold">{{ item.name }}</p>
+              <p class="text-xs text-gray-400 mt-1 flex-grow">{{ item.description }}</p>
+
+              <div class="mt-4">
+                @if (isOwned(item)) {
+                  <div class="w-full py-2 bg-slate-700 border-b-4 border-slate-800 text-gray-400 rounded-md">
+                    Owned
+                  </div>
+                } @else {
+                  <button 
+                    (click)="buy(item)"
+                    [disabled]="!canAfford(item)"
+                    class="w-full py-2 rounded-md btn-pixel btn-pixel-info">
+                    (D) {{ item.price }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Wardrobe View -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+            <!-- Left Column: Preview -->
+            <div class="md:col-span-1 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-4 flex flex-col justify-between items-center">
+                <h3 class="text-xl text-gray-400 self-start">PREVIEW</h3>
+                <div class="flex-grow flex items-center justify-center">
+                    
+                    <!-- DYNAMIC AVATAR PREVIEW -->
+                    <div class="relative w-40 h-40">
+                      <!-- Shield -->
+                      @if (pendingSelections().shield !== 'default') {
+                        <div class="absolute -bottom-2 -right-2 w-16 h-16 rounded-md border-2 border-white/50 flex items-center justify-center text-2xl font-black transform -rotate-12"
+                          [class]="selectedShieldVisuals().bgColor + ' ' + selectedShieldVisuals().textColor + ' ' + selectedShieldVisuals().shadow">
+                          {{ selectedShieldAbbr() }}
+                        </div>
+                      }
+
+                      <!-- Player -->
+                      <div class="absolute inset-0 rounded-full border-4 border-white/20 flex items-center justify-center text-5xl font-black"
+                        [class]="selectedPlayerVisuals().bgColor + ' ' + selectedPlayerVisuals().textColor + ' ' + selectedPlayerVisuals().shadow">
+                        {{ selectedPlayerAbbr() }}
+                      </div>
+
+                      <!-- Weapon -->
+                      @if (pendingSelections().weapon !== 'default') {
+                        <div class="absolute -top-2 -left-2 w-16 h-16 rounded-md border-2 border-white/50 flex items-center justify-center text-2xl font-black transform rotate-12"
+                          [class]="selectedWeaponVisuals().bgColor + ' ' + selectedWeaponVisuals().textColor + ' ' + selectedWeaponVisuals().shadow">
+                          {{ selectedWeaponAbbr() }}
+                        </div>
+                      }
+                    </div>
+
+                </div>
+                <!-- Buttons Wrapper -->
+                <div class="flex-shrink-0 w-full flex items-center gap-2">
+                    <button
+                        (click)="applyChanges()"
+                        [disabled]="!hasChanges()"
+                        class="flex-1 text-center py-2 text-lg btn-pixel btn-pixel-success">
+                        Apply
+                    </button>
+                    <button 
+                      (click)="resetChanges()"
+                      [disabled]="!hasChanges()"
+                      class="flex-1 text-center py-2 text-lg btn-pixel btn-pixel-secondary">
+                        Reset
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Column: Selection -->
+            <div class="md:col-span-2 flex flex-col min-h-0">
+                <div class="flex-shrink-0 flex items-center self-start">
+                    <button 
+                        (click)="setWardrobeCategory('player')"
+                        class="px-4 py-1 text-lg btn-pixel"
+                        [class]="wardrobeCategory() === 'player' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+                        Player
+                    </button>
+                    <button 
+                        (click)="setWardrobeCategory('weapon')"
+                        class="px-4 py-1 text-lg btn-pixel"
+                        [class]="wardrobeCategory() === 'weapon' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+                        Weapon
+                    </button>
+                     <button 
+                        (click)="setWardrobeCategory('shield')"
+                        class="px-4 py-1 text-lg btn-pixel"
+                        [class]="wardrobeCategory() === 'shield' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+                        Shield
+                    </button>
+                </div>
+
+                <div class="flex-grow overflow-y-auto mt-4 pr-2">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        <!-- Default Item -->
+                        <button 
+                            (click)="selectAppearance('default', wardrobeCategory())"
+                            class="bg-slate-900/50 border rounded-md p-3 flex flex-col text-center items-center justify-center aspect-square transition-all"
+                            [class]="isSelected('default', wardrobeCategory()) ? 'border-yellow-500 border-2' : 'border-slate-700'">
+                            <p class="text-4xl text-gray-500">(X)</p>
+                            <p class="mt-1 font-semibold">Default</p>
+                        </button>
+
+                        <!-- Owned Items -->
+                        @for (item of ownedItemsForCategory(); track item.id) {
+                             <button 
+                                (click)="selectAppearance(item.id, item.type)"
+                                class="bg-slate-900/50 border rounded-md p-3 flex flex-col text-center items-center justify-center aspect-square transition-all"
+                                [class]="isSelected(item.id, item.type) ? 'border-yellow-500 border-2' : 'border-slate-700'">
+                                <h3 class="text-4xl font-bold">{{ item.abbreviatedName }}</h3>
+                                <p class="mt-1 font-semibold">{{ item.name }}</p>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+      <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+        Close
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,180 @@
+<div class="w-full h-full bg-gradient-to-b from-gray-900 to-red-950/50 border-4 border-gray-600 p-4 flex flex-col text-sm">
+  @if (player(); as player) {
+    @if (activeEnemy(); as enemy) {
+      <!-- Header -->
+      <div class="flex-shrink-0 text-center mb-4">
+        <h1 class="text-2xl text-red-500 tracking-widest animate-pulse-combat">-- COMBAT --</h1>
+      </div>
+
+      <!-- Character Panels -->
+      <div class="flex-shrink-0 grid grid-cols-2 gap-4 mb-4">
+        <!-- Player Panel -->
+        <div class="p-3 bg-gradient-to-br from-black/50 to-transparent border-2 rounded-md transition-all duration-300" 
+             [class.animate-flash-border]="playerFlash()"
+             [class.border-yellow-400]="combatStatus() === 'player_turn'"
+             [class.border-blue-500]="combatStatus() !== 'player_turn'"
+             [class.animate-turn-glow]="combatStatus() === 'player_turn'">
+          <div class="flex justify-between items-baseline mb-2">
+            <h2 class="text-blue-400" [class.animate-flash-text]="playerFlash()">PLAYER (LVL {{ player.level }})</h2>
+            @if(combatStatus() === 'player_turn') {
+              <span class="px-2 py-0.5 text-xs rounded bg-yellow-500 text-black font-bold animate-pulse">YOUR TURN</span>
+            }
+          </div>
+          <div class="space-y-2">
+            <!-- HP Bar -->
+            <div class="relative w-full bg-gray-900 border border-gray-500 rounded-full h-5 text-xs flex items-center justify-center" [class.animate-flash-border]="playerFlash()">
+              <div class="absolute left-0 top-0 h-full bg-blue-600 rounded-full transition-width duration-300 ease-linear" [class.animate-flash-bg]="playerFlash()" [style.width.%]="getPlayerHpPercent()"></div>
+              <span class="relative z-10">HP: {{ player.hp }} / {{ playerMaxHp() }}</span>
+            </div>
+            <!-- EN Bar -->
+            <div class="relative w-full bg-gray-900 border border-gray-500 rounded-full h-5 text-xs flex items-center justify-center" [class.animate-flash-border]="playerFlash()">
+              <div class="absolute left-0 top-0 h-full bg-yellow-500 rounded-full transition-width duration-300 ease-linear" [class.animate-flash-bg]="playerFlash()" [style.width.%]="getPlayerEnPercent()"></div>
+              <span class="relative z-10">EN: {{ player.en }} / {{ playerMaxEn() }}</span>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-around text-base">
+            <span>ATK: {{ playerAttack() }}</span>
+            <span>DEF: {{ playerDefense() }}</span>
+          </div>
+           <!-- Status Effects -->
+          <div class="mt-2 flex flex-wrap gap-2 min-h-[24px]">
+            @for(effect of player.statusEffects; track effect.type) {
+              <span 
+                class="px-2 py-0.5 text-xs rounded-full cursor-help" 
+                [class]="['defense_boost', 'guarding', 'retaliating', 'phased', 'thorns'].includes(effect.type) ? 'bg-green-700 text-green-200' : 'bg-red-700 text-red-200'"
+                [title]="getStatusEffectTooltip(effect)">
+                {{ effect.type.replace('_', ' ') | uppercase }} ({{ effect.duration }})
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Enemy Panel -->
+        <div class="p-3 bg-gradient-to-br from-black/50 to-transparent border-2 rounded-md transition-all duration-300" 
+             [class.animate-flash-border]="enemyFlash()"
+             [class.border-yellow-400]="combatStatus() === 'enemy_turn'"
+             [class.border-red-500]="combatStatus() !== 'enemy_turn'"
+             [class.animate-turn-glow]="combatStatus() === 'enemy_turn'">
+          <div class="flex justify-between items-baseline mb-2">
+            <h2 class="text-red-400" [class.animate-flash-text]="enemyFlash()">{{ enemy.name | uppercase }} (LVL {{ enemy.level }})</h2>
+            @if(combatStatus() === 'enemy_turn') {
+              <span class="px-2 py-0.5 text-xs rounded bg-yellow-500 text-black font-bold animate-pulse">ENEMY'S TURN</span>
+            }
+          </div>
+           <div class="space-y-2">
+            <!-- HP Bar -->
+            <div class="relative w-full bg-gray-900 border border-gray-500 rounded-full h-5 text-xs flex items-center justify-center" [class.animate-flash-border]="enemyFlash()">
+              <div class="absolute left-0 top-0 h-full bg-red-600 rounded-full transition-width duration-300 ease-linear" [class.animate-flash-bg]="enemyFlash()" [style.width.%]="getEnemyHpPercent()"></div>
+              <span class="relative z-10">{{ enemy.hp }} / {{ enemy.maxHp }}</span>
+            </div>
+          </div>
+          <div class="mt-1 flex justify-around text-base">
+             @if(enemy.nextAction) {
+              <div class="mt-1 text-center bg-black/30 px-3 py-1 rounded">
+                <p class="text-xs text-gray-400">INTENT</p>
+                <p class="font-bold">{{ enemy.nextAction }}</p>
+              </div>
+            }
+            <span>ATK: {{ enemy.attack }}</span>
+            <span>DEF: {{ enemy.defense }}</span>
+          </div>
+          <!-- Status Effects -->
+          <div class="mt-2 flex flex-wrap gap-2 min-h-[24px]">
+            @for(effect of enemy.statusEffects; track effect.type) {
+              <span 
+                class="px-2 py-0.5 text-xs rounded-full cursor-help"
+                [class]="['enraged', 'channeling'].includes(effect.type) ? 'bg-orange-700 text-orange-200' : 'bg-yellow-700 text-yellow-200'"
+                [title]="getStatusEffectTooltip(effect)">
+                {{ effect.type | uppercase }} ({{ effect.duration }})
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Combat Log -->
+      <div class="flex-grow bg-gradient-to-t from-black/50 to-transparent border-2 border-gray-700 rounded-md p-3 mb-4 overflow-y-auto">
+        @for(message of combatLog(); track $index) {
+          <p class="mb-1 last:mb-0">{{ message }}</p>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex-shrink-0 grid grid-cols-5 justify-center gap-2">
+        <button (click)="attack()" [disabled]="combatStatus() !== 'player_turn'" class="px-4 py-3 btn-pixel btn-pixel-yellow text-base">
+          ATTACK
+        </button>
+        <button (click)="guard()" [disabled]="combatStatus() !== 'player_turn'" class="px-4 py-3 btn-pixel btn-pixel-slate text-base">
+          GUARD
+        </button>
+        @for(skill of player.skills; track skill.id) {
+            <button (click)="useSkill(skill)" [disabled]="isSkillDisabled(skill)" class="relative px-4 py-3 btn-pixel btn-pixel-cyan text-base">
+              {{ skill.name.split(' ')[0] }}
+              @if(skill.currentCooldown > 0) {
+                <span class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-black text-white text-sm border-2 border-slate-400">
+                  {{ skill.currentCooldown }}
+                </span>
+              }
+            </button>
+        }
+        <button (click)="openUseItemModal()" [disabled]="combatStatus() !== 'player_turn'" class="px-4 py-3 btn-pixel btn-pixel-slate text-base">
+          Items
+        </button>
+        <button (click)="flee()" [disabled]="combatStatus() !== 'player_turn'" class="px-4 py-3 btn-pixel btn-pixel-slate text-base">
+          Flee
+        </button>
+      </div>
+    } @else {
+      <p class="text-center text-gray-500">No active enemy.</p>
+    }
+  } @else {
+    <p class="text-center text-gray-500">Loading player...</p>
+  }
+</div>
+
+<style>
+  @keyframes pulse-combat-text {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  .animate-pulse-combat {
+    animation: pulse-combat-text 2s ease-in-out infinite;
+  }
+  
+  @keyframes flash-border-white {
+    50% { border-color: white; }
+  }
+  .animate-flash-border {
+    animation: flash-border-white 0.3s ease-out;
+  }
+
+  @keyframes flash-text-white {
+    50% { color: white; }
+  }
+  .animate-flash-text {
+    animation: flash-text-white 0.3s ease-out;
+  }
+
+  @keyframes flash-bg-white {
+    50% { background-color: white; }
+  }
+  .animate-flash-bg {
+    animation: flash-bg-white 0.3s ease-out;
+  }
+
+  @keyframes turn-glow {
+    0%, 100% {
+      box-shadow: 0 0 12px #f59e0b;
+    }
+    50% {
+      box-shadow: 0 0 24px #fde047;
+    }
+  }
+  .animate-turn-glow {
+    animation: turn-glow 1.8s ease-in-out infinite;
+  }
+</style>

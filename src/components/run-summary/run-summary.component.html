@@ -1,0 +1,94 @@
+@if (summary(); as summary) {
+  <div class="fixed inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-lg bg-gradient-to-b py-8 px-6 sm:px-10 text-gray-300 border-pixel border-pixel-primary rounded-lg"
+      [class]="summary.outcome === 'victory' ? 'from-green-950/40 to-gray-800' : 'from-red-950/40 to-gray-800'">
+      
+      <h1 class="text-4xl text-theme-primary text-center tracking-wider">
+        @if (isGauntletRun()) {
+            GAUNTLET OVER
+        } @else if (isChallengeRift()) {
+            RIFT COMPLETE
+        } @else if (summary.outcome === 'victory') {
+            VICTORY!
+        } @else {
+            YOU DIED
+        }
+      </h1>
+      <p class="text-center text-gray-400 mt-2 text-lg">{{ summary.mapName }} ({{ summary.difficulty | uppercase }})</p>
+
+      <hr class="border-gray-600 my-6" />
+
+      @if (summary.nemesisCreated; as nemesis) {
+        <div class="p-3 mb-4 text-center bg-red-900/50 border border-red-500 rounded-md">
+            <p class="text-red-400">Your killer has been promoted!</p>
+            <p class="text-xl text-white font-bold">{{ nemesis.name }}</p>
+            <p class="text-red-400">...will remember you.</p>
+        </div>
+      }
+
+      @if (isGauntletRun()) {
+        <div class="space-y-3 text-lg text-center">
+            <p class="text-xl">You reached</p>
+            <p class="text-6xl font-bold text-theme-primary">{{ summary.floorReached }}</p>
+            <p class="text-xl">Floor</p>
+        </div>
+      } @else if (isChallengeRift()) {
+        <div class="space-y-3 text-lg text-center">
+            <p class="text-xl">Completion Time</p>
+            <p class="text-6xl font-bold text-theme-primary">{{ formatTime(summary.timeSpent) }}</p>
+            @if (summary.isNewBestTime) {
+                <p class="text-xl text-yellow-400 animate-pulse">New Personal Best!</p>
+            }
+        </div>
+      } @else {
+        <div class="space-y-3 text-lg">
+            <div class="flex justify-between">
+            <span>Time Spent:</span>
+            <span>{{ formatTime(summary.timeSpent) }}</span>
+            </div>
+            <div class="flex justify-between">
+            <span>Gold Acquired:</span>
+            <span>{{ summary.goldAcquired }}</span>
+            </div>
+            <div class="flex justify-between">
+            <span>XP Gained:</span>
+            <span>{{ summary.xpGained }}</span>
+            </div>
+            <div class="flex justify-between">
+            <span>Guardians Slain:</span>
+            <span>{{ summary.guardiansSlain }}</span>
+            </div>
+        </div>
+      }
+
+      <hr class="border-gray-600 my-6" />
+
+      <div>
+        <h2 class="text-xl text-center text-gray-400 mb-4">Notable Loot</h2>
+        @if (summary.notableLoot.length > 0) {
+            <div class="flex flex-col gap-2 max-h-32 overflow-y-auto pr-2">
+                @for(item of summary.notableLoot; track $index) {
+                    <div class="p-2 bg-slate-900/50 border border-slate-700 rounded-md text-center">
+                        <span class="font-bold" [style.color]="getRarityColor(item.rarity)">{{ item.name }}</span>
+                    </div>
+                }
+            </div>
+        } @else {
+            <p class="text-center text-gray-500 italic">No rare items found this run.</p>
+        }
+      </div>
+      
+      <div class="text-center mt-8 flex justify-center gap-4">
+        @if (!isGauntletRun() && !isChallengeRift()) {
+            <button (click)="retry()" class="py-3 px-8 btn-pixel btn-pixel-success text-xl">
+            Try Again
+            </button>
+        }
+        <button (click)="continueToHub()" class="py-3 px-8 btn-pixel btn-pixel-primary text-xl">
+          HUB
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

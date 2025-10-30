@@ -1,0 +1,114 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-primary">SKILL BOOK</h2>
+        <div class="flex items-center gap-4">
+           <p class="text-lg">Skill Points: <span class="text-theme-primary font-bold text-xl">{{ player().skillPoints }}</span></p>
+           <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+             X
+           </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow min-h-[250px] overflow-y-auto pr-2">
+        @if (classSkillTree().length > 0) {
+          <div class="flex flex-col gap-3">
+            @for (node of classSkillTree(); track node.id) {
+              <div class="relative pl-8">
+                <!-- Dependency Line -->
+                @if (node.dependencies && node.dependencies.length > 0) {
+                   <div class="absolute top-1/2 -left-1 w-8 h-px bg-slate-500"></div>
+                   <div class="absolute -top-1/2 -left-1 w-px h-full bg-slate-500"></div>
+                }
+                <div class="p-3 bg-slate-900/50 border border-slate-700 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                  <div class="flex-1">
+                    <div class="flex items-baseline gap-3">
+                      <h3 class="text-lg font-bold" [class]="isNodeLearned(node.id) ? 'text-theme-primary' : 'text-theme-info'">{{ node.name }}</h3>
+                      @if(node.type === 'passive') {
+                        <span class="text-xs px-2 py-0.5 bg-purple-800 text-purple-300 rounded">PASSIVE</span>
+                      } @else {
+                        <span class="text-xs px-2 py-0.5 bg-green-800 text-green-300 rounded">ACTIVE</span>
+                      }
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">{{ node.description }}</p>
+                    <div class="flex gap-4 mt-2 text-sm">
+                      <span class="text-gray-400">Requires Lvl {{ node.levelRequirement }}</span>
+                      <span class="text-theme-primary">Cost: {{node.cost}} SP</span>
+                    </div>
+
+                    <!-- Skill Mastery UI -->
+                    @if (node.type === 'active' && isNodeLearned(node.id)) {
+                        @let skill = getSkillById(node.skillId);
+                        @if (skill) {
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center text-xs mb-1">
+                                    <span class="font-bold text-cyan-400">Mastery Lvl {{ skill.masteryLevel }}</span>
+                                    <span>{{ skill.masteryXp }} / {{ skill.masteryXpToNextLevel }}</span>
+                                </div>
+                                <div class="w-full bg-black/50 border border-slate-600 h-3 p-0.5">
+                                    <div class="bg-cyan-500 h-full" [style.width.%]="(skill.masteryXp / skill.masteryXpToNextLevel) * 100"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                  </div>
+                  <div class="w-full md:w-32 text-right">
+                    @if(isNodeLearned(node.id)) {
+                      <div class="px-4 py-2 text-center bg-slate-700 text-green-400 border-b-4 border-slate-800">Learned</div>
+                    } @else {
+                      <button (click)="learn(node.id)" [disabled]="!isNodeLearnable(node)" class="w-full px-4 py-2 btn-pixel btn-pixel-success text-lg">
+                        Learn
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="flex items-center justify-center text-center h-full p-8">
+            <p class="text-lg text-gray-400">No skills available for your class.</p>
+          </div>
+        }
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 flex justify-between items-center pt-4 border-t-2 border-slate-600">
+        <button (click)="attemptRespec()" class="py-2 px-6 btn-pixel btn-pixel-danger text-lg">
+          Respec ({{ respecCost() }} G)
+        </button>
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+
+    <!-- Respec Confirmation Modal -->
+    @if(respecConfirmationVisible()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+            <div class="w-full max-w-md flex flex-col bg-gradient-to-b from-red-950/20 to-slate-800 border-pixel border-pixel-danger p-6 text-gray-300 gap-4 text-center">
+              <h2 class="text-2xl text-theme-danger">Reset Skills?</h2>
+              <div class="my-4">
+                <p class="text-base text-gray-400 leading-relaxed">
+                  This will refund all spent skill points and remove all learned skills.
+                  <br/>
+                  This will cost <span class="text-theme-primary font-bold">{{ respecCost() }} G</span>. Are you sure?
+                </p>
+              </div>
+              <div class="flex justify-center gap-4">
+                <button (click)="cancelRespec()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-lg">
+                  Cancel
+                </button>
+                <button (click)="confirmRespec()" class="py-2 px-8 btn-pixel btn-pixel-danger text-lg">
+                  Confirm
+                </button>
+              </div>
+            </div>
+        </div>
+    }
+</div>

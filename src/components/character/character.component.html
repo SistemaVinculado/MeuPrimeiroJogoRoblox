@@ -1,0 +1,44 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-primary">WORLD PROGRESSION</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow overflow-y-auto pr-2">
+        <div class="flex flex-col items-center gap-4">
+          @for (world of worlds; track world.id; let i = $index) {
+            <div class="w-full max-w-2xl p-4 border-2 rounded-lg bg-gradient-to-r from-amber-900/20 to-black/20" [class]="isWorldUnlocked(world) ? 'border-theme-primary' : 'border-slate-700'">
+              <h3 class="text-2xl" [class]="isWorldUnlocked(world) ? 'text-theme-primary' : 'text-slate-500'">
+                {{ isWorldUnlocked(world) ? world.name : '???' }}
+              </h3>
+              @if (isWorldUnlocked(world)) {
+                <p class="text-gray-400 mt-1">{{ world.description }}</p>
+                @if(isCurrentWorld(world)) {
+                  <p class="mt-2 px-3 py-1 inline-block bg-yellow-500 text-black font-bold text-sm rounded">CURRENT WORLD</p>
+                }
+              } @else {
+                <p class="text-slate-500 mt-1">Complete the previous world on 'Dark' difficulty to unlock.</p>
+              }
+            </div>
+            @if (i < worlds.length - 1) {
+              <div class="h-8 w-1 bg-slate-600"></div>
+            }
+          }
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>

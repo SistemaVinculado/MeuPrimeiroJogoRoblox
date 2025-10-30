@@ -1,0 +1,35 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl flex flex-col bg-gradient-to-b from-gray-800 to-gray-900 border-pixel border-pixel-primary p-6 text-gray-300 gap-4 text-center rounded-lg">
+      <!-- Header -->
+      <h1 class="text-4xl text-theme-primary text-shadow-pixel">CHOOSE YOUR PATH</h1>
+      <p class="text-gray-400">Your journey begins now. Select a class to define your playstyle.</p>
+  
+      <!-- Content -->
+      <div class="my-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Warrior Card -->
+        <button (click)="selectClass('Warrior')" class="p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 rounded-lg text-left flex flex-col hover:border-theme-primary hover:bg-slate-800/50 transition-colors duration-200">
+            <h2 class="text-3xl text-theme-primary">Warrior</h2>
+            <p class="text-gray-400 mt-2 flex-grow">
+                A master of martial combat, focusing on high defense and powerful physical attacks. Warriors excel at surviving tough encounters through strength and resilience.
+            </p>
+            <div class="mt-4 text-center py-2 bg-theme-primary text-black font-bold">SELECT WARRIOR</div>
+        </button>
+
+        <!-- Mage Card -->
+        <button (click)="selectClass('Mage')" class="p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 rounded-lg text-left flex flex-col hover:border-theme-primary hover:bg-slate-800/50 transition-colors duration-200">
+            <h2 class="text-3xl text-theme-primary">Mage</h2>
+            <p class="text-gray-400 mt-2 flex-grow">
+                A wielder of arcane energies, focusing on managing a large Energy pool to cast debilitating spells and potent magical attacks from a distance.
+            </p>
+            <div class="mt-4 text-center py-2 bg-theme-primary text-black font-bold">SELECT MAGE</div>
+        </button>
+      </div>
+      
+      <!-- Footer -->
+      <div class="text-center text-sm text-gray-500">
+        <p>Don't worry, you can switch your class at any time from the 'Inventory' screen in the hub.</p>
+      </div>
+    </div>
+</div>

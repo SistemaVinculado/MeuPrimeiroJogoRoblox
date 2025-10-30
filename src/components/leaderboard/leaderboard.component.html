@@ -1,0 +1,68 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-primary">LEADERBOARD</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Category Buttons -->
+      <div class="flex-shrink-0 flex flex-wrap justify-center items-center gap-2 border-b-2 border-slate-700 pb-4">
+          <button (click)="setCategory('global')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'global' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Top Global</button>
+          <button (click)="setCategory('gauntlet')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'gauntlet' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Gauntlet</button>
+          <button (click)="setCategory('rift')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'rift' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Challenge Rift</button>
+          <button (click)="setCategory('combat')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'combat' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Combat</button>
+          <button (click)="setCategory('progression')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'progression' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Progression</button>
+          <button (click)="setCategory('totalPower')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'totalPower' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Total Power</button>
+          <button (click)="setCategory('uniqueGear')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'uniqueGear' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Unique Gear</button>
+          <button (click)="setCategory('dedication')" class="px-4 py-2 text-base btn-pixel" [class]="activeCategory() === 'dedication' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Dedication</button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow min-h-0 overflow-y-auto pr-2">
+        <table class="w-full text-left">
+          <thead class="bg-black/30 text-gray-400 uppercase text-sm">
+            <tr>
+              <th class="p-3 w-16 text-center">Rank</th>
+              <th class="p-3">Name</th>
+              <th class="p-3 w-32">Class</th>
+              <th class="p-3">{{ categoryHeader() }}</th>
+              <th class="p-3 w-32 text-center">Prestige</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(entry of displayData(); track entry.rank + entry.name) {
+              <tr class="border-b border-slate-700 hover:bg-slate-800/50">
+                <td class="p-3 text-center font-bold text-lg" [class]="getRankClass(entry.rank)" [title]="getRankTitle(entry.rank)">{{ entry.rank }}</td>
+                <td class="p-3 text-lg flex items-center gap-2">
+                  <span [class]="getRankClass(entry.rank)" [title]="getRankTitle(entry.rank)">
+                    {{ entry.name }}
+                  </span>
+                  <button (click)="inspectPlayer(entry.name)" title="Inspect Player" class="px-2 py-1 btn-pixel btn-pixel-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 3 10 3s6.268 1.943 9.542 7c-3.274 5.057-9.064 7-9.542 7S3.732 15.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </td>
+                <td class="p-3">{{ entry.playerClass }}</td>
+                <td class="p-3">{{ entry.displayScore }}</td>
+                <td class="p-3 text-center text-lg font-bold" [class]="entry.prestige > 0 ? 'text-purple-400' : 'text-gray-500'">{{ entry.prestige }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>

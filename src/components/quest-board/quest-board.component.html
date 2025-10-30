@@ -1,0 +1,97 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-green-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-success p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-success">QUEST BOARD</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="flex-shrink-0 flex items-center self-start">
+        <button (click)="setTab('player')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'player' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Player</button>
+        <button (click)="setTab('guild')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'guild' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Guild</button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow min-h-0 overflow-y-auto pr-2">
+        @if (currentTab() === 'player') {
+          @if (activeQuests().length > 0) {
+              <div class="flex flex-col gap-3">
+                @for(quest of activeQuests(); track quest.id) {
+                  <div class="p-4 bg-slate-900/50 border border-slate-700 rounded-md flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex-grow w-full">
+                      <h3 class="text-lg font-bold text-theme-primary">{{ quest.title }}</h3>
+                      <p class="text-sm text-gray-400 mt-1">{{ quest.description }}</p>
+                      
+                      <!-- Progress Bar -->
+                      <div class="mt-3">
+                          <div class="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>PROGRESS</span>
+                              <span>{{ quest.currentValue }} / {{ quest.objective?.targetValue }}</span>
+                          </div>
+                          <div class="w-full bg-black/50 border-2 border-slate-600 h-5 p-0.5">
+                              <div class="bg-green-600 h-full" [style.width.%]="getQuestProgress(quest)"></div>
+                          </div>
+                      </div>
+
+                      <div class="flex items-center gap-4 mt-2">
+                        <span class="text-gray-400">Rewards:</span>
+                        @if (quest.rewards.gold) { <span class="text-theme-primary">{{ quest.rewards.gold }} G</span> }
+                        @if (quest.rewards.arcaneDust) { <span class="text-theme-danger">{{ quest.rewards.arcaneDust }} Dust</span> }
+                        @if (quest.rewards.diamonds) { <span class="text-theme-info">(D) {{ quest.rewards.diamonds }}</span> }
+                      </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <button (click)="claimReward(quest.id)" [disabled]="quest.status !== 'completed'" class="px-6 py-2 btn-pixel btn-pixel-success text-lg">
+                          {{ quest.status === 'claimed' ? 'Claimed' : 'Claim' }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+          } @else {
+              <p class="text-center text-gray-500 py-8">No active quests. Check back soon!</p>
+          }
+        } @else {
+            @if (guildBounty(); as bounty) {
+                <div class="p-4 bg-slate-900/50 border-2 border-green-700 rounded-md">
+                    <h3 class="text-xl font-bold text-green-400">Weekly Guild Bounty</h3>
+                    <p class="text-lg font-bold text-theme-primary mt-2">{{ bounty.quest.title }}</p>
+                    <p class="text-sm text-gray-400 mt-1">{{ bounty.quest.description }}</p>
+
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm text-gray-400 mb-1">
+                            <span>GUILD PROGRESS</span>
+                            <span>{{ bounty.guildCurrentValue.toLocaleString() }} / {{ bounty.quest.objective.targetValue.toLocaleString() }}</span>
+                        </div>
+                        <div class="w-full bg-black/50 border-2 border-slate-600 h-8 p-0.5">
+                            <div class="bg-green-600 h-full" [style.width.%]="getBountyProgress(bounty)"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 mt-3">
+                      <span class="text-gray-400">Rewards:</span>
+                      @if (bounty.quest.rewards.gold) { <span class="text-theme-primary">{{ bounty.quest.rewards.gold.toLocaleString() }} G</span> }
+                      @if (bounty.quest.rewards.arcaneDust) { <span class="text-theme-danger">{{ bounty.quest.rewards.arcaneDust }} Dust</span> }
+                       @if (bounty.quest.rewards.reforgingEmbers) { <span class="text-yellow-400">{{ bounty.quest.rewards.reforgingEmbers }} Embers</span> }
+                      @if (bounty.quest.rewards.diamonds) { <span class="text-theme-info">(D) {{ bounty.quest.rewards.diamonds }}</span> }
+                    </div>
+                </div>
+            } @else {
+                <p class="text-center text-gray-500 py-8">Your guild has no active bounty.</p>
+            }
+        }
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>

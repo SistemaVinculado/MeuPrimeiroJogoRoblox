@@ -1,0 +1,136 @@
+<div class="fixed inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+    <!-- Header -->
+    <div class="flex-shrink-0 flex flex-wrap justify-between items-center gap-4 border-b-2 border-slate-600 pb-3">
+      <div class="flex items-center gap-4">
+        <h2 class="text-3xl text-theme-primary">MARKETPLACE</h2>
+        <div class="flex items-center">
+          <button 
+            (click)="setTab('buy')"
+            class="px-4 py-1 text-lg btn-pixel"
+            [class]="currentTab() === 'buy' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+            BUY
+          </button>
+          <button 
+            (click)="setTab('sell')"
+            class="px-4 py-1 text-lg btn-pixel"
+            [class]="currentTab() === 'sell' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+            SELL
+          </button>
+           <button 
+            (click)="setTab('buyback')"
+            class="px-4 py-1 text-lg btn-pixel"
+            [class]="currentTab() === 'buyback' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+            BUYBACK
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <p class="text-lg">Your Gold: <span class="text-theme-primary">{{ playerGold() }} G</span></p>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+    </div>
+
+    <!-- Item List -->
+    <div class="flex-grow overflow-y-auto pr-2">
+      @switch (currentTab()) {
+        @case ('buy') {
+          @if (shopInventory().length > 0) {
+            <div class="flex flex-col gap-3">
+              @for (item of shopInventory(); track item.id) {
+                <div class="flex flex-wrap justify-between items-center gap-y-2 p-3 bg-gradient-to-r from-slate-900/50 to-transparent border border-slate-700" [class.adventurer-special]="item.isSpecial">
+                  <div class="flex-1 min-w-[200px]">
+                    <h3 class="text-lg font-bold" [style.color]="rarityColors[item.rarity]">{{ item.name }}</h3>
+                    <p class="text-sm text-gray-400">{{ item.description }}</p>
+                  </div>
+                  <div class="w-40 text-left md:text-center">
+                    <span class="text-lg text-theme-primary">{{ item.price }} G</span>
+                    @if(item.stock < 999) {
+                      <span class="text-sm text-gray-400 ml-2"> (Stock: {{item.stock}})</span>
+                    }
+                  </div>
+                  <div class="w-48 text-right flex gap-2 justify-end">
+                    @if (item.item.type === 'potion' || item.item.type === 'consumable') {
+                      <button (click)="buy(item.id, 5)" [disabled]="!canAfford(item.price * 5) || item.stock < 5" class="px-4 py-2 text-base btn-pixel btn-pixel-success">
+                        x5
+                      </button>
+                    }
+                    <button (click)="buy(item.id, 1)" [disabled]="!canAfford(item.price) || item.stock < 1" class="px-6 py-2 text-lg btn-pixel btn-pixel-success">
+                      Buy
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="flex items-center justify-center h-full text-gray-500 py-10">
+              <p>The shop is currently empty. Check back after your next run!</p>
+            </div>
+          }
+        }
+        @case ('sell') {
+           <div class="mb-4">
+             <button (click)="sellAllJunk()" [disabled]="junkItemCount() === 0" class="px-4 py-2 text-lg btn-pixel btn-pixel-danger">
+              Sell All Junk ({{ junkItemCount() }})
+            </button>
+           </div>
+          @if (sellableInventory().length > 0) {
+            <div class="flex flex-col gap-3">
+              @for (entry of sellableInventory(); track entry.item.id + entry.originalIndex) {
+                <div class="flex flex-wrap justify-between items-center gap-y-2 p-3 bg-gradient-to-r from-slate-900/50 to-transparent border-b border-slate-700">
+                  <div class="flex-1 min-w-[200px]">
+                    <h3 class="text-lg font-bold" [style.color]="rarityColors[entry.item.rarity]">{{ entry.item.name }}</h3>
+                    <p class="text-sm text-gray-400">{{ entry.item.description }}</p>
+                  </div>
+                  <div class="w-32 text-left md:text-center text-lg text-theme-primary"> </div>
+                  <div class="w-28 text-right">
+                    <button (click)="sell(entry.originalIndex)" class="px-6 py-2 text-lg btn-pixel btn-pixel-primary">
+                      Sell
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="flex items-center justify-center h-full text-gray-500 py-10">
+              <p>Your bag is empty.</p>
+            </div>
+          }
+        }
+        @case ('buyback') {
+          @if (buybackItems().length > 0) {
+            <div class="flex flex-col gap-3">
+              @for (entry of buybackItems(); track $index; let i = $index) {
+                <div class="flex flex-wrap justify-between items-center gap-y-2 p-3 bg-gradient-to-r from-slate-900/50 to-transparent border-b border-slate-700">
+                  <div class="flex-1 min-w-[200px]">
+                    <h3 class="text-lg font-bold" [style.color]="rarityColors[entry.item.rarity]">{{ entry.item.name }}</h3>
+                    <p class="text-sm text-gray-400">{{ entry.item.description }}</p>
+                  </div>
+                  <div class="w-32 text-left md:text-center text-lg text-theme-primary">{{ entry.sellPrice }} G</div>
+                  <div class="w-28 text-right">
+                    <button (click)="buyback(i)" [disabled]="!canAfford(entry.sellPrice)" class="px-6 py-2 text-lg btn-pixel btn-pixel-info">
+                      Buyback
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="flex items-center justify-center h-full text-gray-500 py-10">
+              <p>No items to buy back.</p>
+            </div>
+          }
+        }
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+      <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+        CLOSE
+      </button>
+    </div>
+  </div>
+</div>

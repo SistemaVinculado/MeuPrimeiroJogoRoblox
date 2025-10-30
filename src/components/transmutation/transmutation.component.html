@@ -1,0 +1,91 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-5xl h-[90vh] flex flex-col bg-gradient-to-br from-purple-900/30 via-gray-800 to-gray-900 border-pixel border-pixel-info p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-info">TRANSMUTATION CUBE</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-grow flex flex-col md:flex-row gap-6 overflow-hidden">
+        <!-- Left Column: Recipes -->
+        <div class="w-full md:w-1/3 flex flex-col">
+            <h3 class="text-lg text-gray-400 mb-2">RECIPES</h3>
+            <div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto">
+                <div class="flex flex-col gap-2">
+                    @for(recipe of recipes(); track recipe.id) {
+                        <button (click)="selectRecipe(recipe)" class="p-3 text-left w-full bg-slate-900/50 border rounded-md hover:border-yellow-400"
+                          [class]="selectedRecipe()?.id === recipe.id ? 'border-yellow-500 border-2' : 'border-slate-600'">
+                          <p class="font-bold">{{ recipe.name }}</p>
+                          <p class="text-xs text-gray-400">{{ recipe.description }}</p>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Column: Crafting Area -->
+        <div class="w-full md:w-1/3 flex flex-col items-center justify-center bg-black/40 border-2 border-slate-700 rounded-md p-4">
+            @if (selectedRecipe(); as recipe) {
+                <div class="flex flex-col items-center gap-4">
+                    <h3 class="text-xl text-theme-primary">{{ recipe.name }}</h3>
+                    <!-- Input Slots -->
+                    <div class="grid grid-cols-3 gap-2">
+                        @for (slot of recipeSlots(); track $index) {
+                            @let itemInSlot = inputSlots()[$index];
+                            <button (click)="itemInSlot && removeItemFromSlot(itemInSlot)" class="w-20 h-20 bg-slate-900/50 border border-dashed border-slate-600 rounded-md flex items-center justify-center text-center text-xs">
+                                @if (itemInSlot) {
+                                    <span>{{ itemInSlot.name }}</span>
+                                } @else {
+                                    <span class="text-gray-500">Input</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                    <button (click)="transmute()" [disabled]="!canTransmute()" class="mt-4 px-8 py-3 btn-pixel btn-pixel-success text-lg">
+                        TRANSMUTE
+                    </button>
+                </div>
+            } @else {
+                <p class="text-gray-500">Select a recipe to begin.</p>
+            }
+        </div>
+
+        <!-- Right Column: Available Items -->
+        <div class="w-full md:w-1/3 flex flex-col">
+          <h3 class="text-lg text-gray-400 mb-2">AVAILABLE ITEMS</h3>
+          <div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto">
+            @if(inventory().length > 0) {
+              <div class="grid grid-cols-4 gap-2">
+                @for(item of inventory(); track item.originalIndex) {
+                  <button 
+                    (click)="addItemToSlot(item)" 
+                    [disabled]="isItemInSlots(item.originalIndex)"
+                    class="aspect-square bg-slate-900/50 border border-slate-600 rounded-md flex items-center justify-center p-1 text-center text-xs hover:border-yellow-400 disabled:opacity-30 disabled:hover:border-slate-600"
+                    [class.border-blue-400]="isItemInSlots(item.originalIndex)"
+                    [title]="item.name">
+                    {{ item.name.split(' ')[0] }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="flex items-center justify-center h-full text-center text-gray-500">
+                <p>Your bag is empty.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>

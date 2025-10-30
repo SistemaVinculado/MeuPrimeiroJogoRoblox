@@ -1,0 +1,19 @@
+@if (message(); as msg) {
+  <div 
+    class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-md shadow-lg text-white text-lg animate-fade-in-out border-2"
+    [class]="msg.type === 'success' ? 'bg-green-600 border-green-400' : msg.type === 'error' ? 'bg-red-600 border-red-400' : 'bg-blue-600 border-blue-400'">
+    {{ msg.text }}
+  </div>
+}
+
+<style>
+  @keyframes fade-in-out {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    15% { opacity: 1; transform: translate(-50%, 0); }
+    85% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+  }
+  .animate-fade-in-out {
+    animation: fade-in-out 3s ease-in-out forwards;
+  }
+</style>

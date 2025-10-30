@@ -1,0 +1,23 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-lg flex flex-col bg-gradient-to-b from-red-950/20 to-slate-800 border-pixel border-pixel-danger p-6 text-gray-300 gap-4 text-center rounded-lg">
+      <!-- Header -->
+      <h2 class="text-2xl text-theme-danger">Start a New Game?</h2>
+  
+      <!-- Content -->
+      <div class="my-4">
+        <p class="text-base text-gray-300 leading-relaxed">This will overwrite your existing saved progress. Are you sure you want to continue?</p>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex justify-center gap-4">
+        <button (click)="cancel()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-lg">
+          Cancel
+        </button>
+        <button (click)="confirm()" class="py-2 px-8 btn-pixel btn-pixel-danger text-lg">
+          Overwrite Save
+        </button>
+      </div>
+    </div>
+</div>

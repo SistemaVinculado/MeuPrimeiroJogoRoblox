@@ -1,0 +1,165 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  @if (player(); as p) {
+    <!-- Modal Panel -->
+    <div class="w-full max-w-5xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-primary">PLAYER STATISTICS</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto pr-2">
+        
+        <!-- Left Column: Primary & Combat Stats -->
+        <div class="md:col-span-2 flex flex-col gap-6">
+          <!-- Primary Attributes -->
+          <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+            <h3 class="text-lg text-gray-400 mb-3">PRIMARY ATTRIBUTES</h3>
+            <div class="space-y-4">
+              <!-- HP -->
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Max Health</span>
+                  <span class="text-xl text-theme-primary font-bold">{{ maxHpBreakdown().total }}</span>
+                </div>
+                <div class="text-xs text-gray-400">
+                  Base: {{ maxHpBreakdown().base }} | Gear: {{ maxHpBreakdown().gear }} | Perks: {{ maxHpBreakdown().perks }}%
+                </div>
+              </div>
+              <!-- EN -->
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Max Energy</span>
+                  <span class="text-xl text-theme-primary font-bold">{{ maxEnBreakdown().total }}</span>
+                </div>
+                <div class="text-xs text-gray-400">
+                  Base: {{ maxEnBreakdown().base }} | Gear: {{ maxEnBreakdown().gear }} | Perks: {{ maxEnBreakdown().perks }}%
+                </div>
+              </div>
+              <!-- Attack -->
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Attack</span>
+                  <span class="text-xl text-theme-primary font-bold">{{ attackBreakdown().total }}</span>
+                </div>
+                <div class="text-xs text-gray-400">
+                  Base: {{ attackBreakdown().base }} | Gear: {{ attackBreakdown().gear }} | Perks: {{ attackBreakdown().perks }}%
+                </div>
+              </div>
+              <!-- Defense -->
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Defense</span>
+                  <span class="text-xl text-theme-primary font-bold">{{ defenseBreakdown().total }}</span>
+                </div>
+                <div class="text-xs text-gray-400">
+                  Base: {{ defenseBreakdown().base }} | Gear: {{ defenseBreakdown().gear }} | Perks: {{ defenseBreakdown().perks }}%
+                </div>
+              </div>
+               <!-- Luck -->
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Luck</span>
+                  <span class="text-xl text-theme-primary font-bold">{{ luckBreakdown().total }}</span>
+                </div>
+                <div class="text-xs text-gray-400">
+                  Base: {{ luckBreakdown().base }} | Gear: {{ luckBreakdown().gear }} | Perks: {{ luckBreakdown().perks }}%
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Combat Ratings -->
+          <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+            <h3 class="text-lg text-gray-400 mb-3">COMBAT RATINGS</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded">
+                <p class="text-gray-400">Crit Chance</p>
+                <p class="text-2xl font-bold text-yellow-400">{{ critChance() }}%</p>
+              </div>
+              <div class="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded">
+                <p class="text-gray-400">Crit Damage</p>
+                <p class="text-2xl font-bold text-yellow-400">+{{ critDamage() }}%</p>
+              </div>
+              <div class="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded">
+                <p class="text-gray-400">Damage Reduction</p>
+                <p class="text-2xl font-bold text-green-400">{{ damageReduction() }}%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bonus Stats -->
+          <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+            <h3 class="text-lg text-gray-400 mb-3">BONUS STATS</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded">
+                <p class="text-gray-400">Gold Find</p>
+                <p class="text-2xl font-bold text-yellow-400">+{{ goldFind() }}%</p>
+              </div>
+              <div class="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded">
+                <p class="text-gray-400">Experience Gain</p>
+                <p class="text-2xl font-bold text-blue-400">+{{ xpGain() }}%</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Equipment & Progression -->
+        <div class="md:col-span-1 flex flex-col gap-6">
+          <!-- Equipment Summary -->
+          <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+            <h3 class="text-lg text-gray-400 mb-3">EQUIPMENT SUMMARY</h3>
+            <div class="space-y-2">
+              <p><span class="font-bold">Primal Items:</span> {{ equipmentSummary().primalCount }}</p>
+              <div>
+                <p class="font-bold mb-1">Equipped Rarities:</p>
+                @if (objectKeys(equipmentSummary().rarityCounts).length > 0) {
+                  <ul class="list-disc list-inside pl-2">
+                    @for(entry of objectEntries(equipmentSummary().rarityCounts); track entry[0]) {
+                      <li>{{ entry[0] }}: {{ entry[1] }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="text-gray-500 italic">No items equipped.</p>
+                }
+              </div>
+               <div>
+                <p class="font-bold mb-1">Active Set Bonuses:</p>
+                @if (objectEntries(equipmentSummary().setCounts).length > 0) {
+                  <ul class="list-disc list-inside pl-2">
+                    @for(entry of objectEntries(equipmentSummary().setCounts); track entry[0]) {
+                      <li>{{ entry[0] }} ({{ entry[1] }} pieces)</li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="text-gray-500 italic">No set bonuses active.</p>
+                }
+              </div>
+            </div>
+          </div>
+          
+          <!-- Progression -->
+          <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+            <h3 class="text-lg text-gray-400 mb-3">PROGRESSION</h3>
+            <div class="space-y-2">
+              <div class="flex justify-between"><span>Highest Level:</span> <span>{{ playerProgress().highestCharacterLevelReached }}</span></div>
+              <div class="flex justify-between"><span>Highest Gauntlet:</span> <span>{{ playerProgress().highestGauntletFloor }}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  }
+</div>

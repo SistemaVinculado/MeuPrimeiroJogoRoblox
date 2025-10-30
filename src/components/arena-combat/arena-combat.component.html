@@ -1,0 +1,53 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  @if (player(); as player) {
+    @if (opponent(); as opponent) {
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-b from-gray-900 to-red-950/50 border-pixel border-pixel-danger p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 text-center">
+        <h1 class="text-3xl text-red-500 tracking-widest animate-pulse-combat">-- ARENA BATTLE --</h1>
+      </div>
+
+      <!-- Character Panels -->
+      <div class="flex-shrink-0 grid grid-cols-2 gap-4">
+        <!-- Player Panel -->
+        <div class="p-3 bg-gradient-to-br from-black/50 to-transparent border-2 border-blue-500 rounded-md">
+          <h2 class="text-blue-400 mb-2">YOU (LVL {{ player.level }})</h2>
+          <div class="relative w-full bg-gray-900 border border-gray-500 rounded-full h-6 text-xs flex items-center justify-center">
+            <div class="absolute left-0 top-0 h-full bg-blue-600 rounded-full transition-all duration-300 ease-linear" [style.width.%]="playerHpPercent()"></div>
+            <span class="relative z-10">HP: {{ playerCurrentHp() }} / {{ playerTotalHp() }}</span>
+          </div>
+        </div>
+
+        <!-- Opponent Panel -->
+        <div class="p-3 bg-gradient-to-br from-black/50 to-transparent border-2 border-red-500 rounded-md">
+          <h2 class="text-red-400 mb-2">{{ opponent.name | uppercase }} (LVL {{ opponent.level }})</h2>
+          <div class="relative w-full bg-gray-900 border border-gray-500 rounded-full h-6 text-xs flex items-center justify-center">
+            <div class="absolute left-0 top-0 h-full bg-red-600 rounded-full transition-all duration-300 ease-linear" [style.width.%]="opponentHpPercent()"></div>
+            <span class="relative z-10">HP: {{ opponentCurrentHp() }} / {{ opponent.playerSnapshot.maxHp.base }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combat Log -->
+      <div class="flex-grow bg-gradient-to-t from-black/50 to-transparent border-2 border-gray-700 rounded-md p-3 overflow-y-auto">
+        @for(message of combatLog(); track $index) {
+          <p class="mb-1 last:mb-0">{{ message }}</p>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        @if (isBattleOver()) {
+          <button (click)="continue()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">
+            Continue
+          </button>
+        } @else {
+          <p class="py-2 px-8 text-xl text-gray-500 animate-pulse">BATTLE IN PROGRESS...</p>
+        }
+      </div>
+    </div>
+    }
+  }
+</div>

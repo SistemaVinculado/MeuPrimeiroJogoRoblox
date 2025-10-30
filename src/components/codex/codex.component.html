@@ -1,0 +1,79 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-5xl h-[90vh] flex flex-col bg-gradient-to-br from-cyan-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-info p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-info">ADVENTURER'S CODEX</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+       <!-- Tabs -->
+      <div class="flex-shrink-0 flex items-center self-start">
+        <button 
+          (click)="setTab('enemies')"
+          class="px-4 py-1 text-lg btn-pixel"
+          [class]="currentTab() === 'enemies' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+          Enemies
+        </button>
+        <button 
+          (click)="setTab('items')"
+          class="px-4 py-1 text-lg btn-pixel"
+          [class]="currentTab() === 'items' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">
+          Items
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow min-h-0 overflow-y-auto pr-2">
+        @if (currentTab() === 'enemies') {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            @for(enemy of allEnemies; track enemy.key) {
+              <div class="p-3 bg-slate-900/50 border border-slate-700 rounded-md">
+                @if (isEnemyDiscovered(enemy.key)) {
+                  <h3 class="text-lg font-bold">{{ enemy.name }}</h3>
+                  <div class="grid grid-cols-4 gap-2 text-sm mt-2 text-center">
+                    <div><span class="text-gray-400 block">HP</span>{{ enemy.maxHp }}</div>
+                    <div><span class="text-gray-400 block">ATK</span>{{ enemy.attack }}</div>
+                    <div><span class="text-gray-400 block">DEF</span>{{ enemy.defense }}</div>
+                    <div><span class="text-gray-400 block">LVL</span>{{ enemy.level }}</div>
+                  </div>
+                } @else {
+                  <h3 class="text-lg font-bold text-gray-500">???</h3>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+             @for(item of allItems; track item.id) {
+              <div class="p-3 bg-slate-900/50 border border-slate-700 rounded-md">
+                @if (isItemDiscovered(item.id)) {
+                  <h3 class="text-lg font-bold">{{ item.name }}</h3>
+                  <p class="text-sm text-gray-400 italic mt-1">{{ item.description }}</p>
+                  @if (item.stats) {
+                    <div class="flex gap-4 text-sm mt-2">
+                      @for (stat of objectKeys(item.stats); track stat) {
+                        <span>+{{item.stats[stat]}} {{stat.replace('max', 'Max ')}}</span>
+                      }
+                    </div>
+                  }
+                } @else {
+                   <h3 class="text-lg font-bold text-gray-500">???</h3>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>

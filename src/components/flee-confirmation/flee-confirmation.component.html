@@ -1,0 +1,23 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-md flex flex-col bg-gradient-to-b from-yellow-950/20 to-slate-800 border-pixel border-pixel-yellow p-6 text-gray-300 gap-4 text-center">
+      <!-- Header -->
+      <h2 class="text-2xl text-yellow-400">Flee Battle?</h2>
+  
+      <!-- Content -->
+      <div class="my-4">
+        <p class="text-base text-gray-400 leading-relaxed">Fleeing has a chance to fail. A guaranteed escape requires a special item.</p>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex justify-center gap-4">
+        <button (click)="resumeBattle()" class="py-2 px-8 btn-pixel btn-pixel-slate text-lg">
+          Resume Battle
+        </button>
+        <button (click)="attemptToFlee()" class="py-2 px-8 btn-pixel btn-pixel-red text-lg">
+          Attempt to Flee
+        </button>
+      </div>
+    </div>
+</div>

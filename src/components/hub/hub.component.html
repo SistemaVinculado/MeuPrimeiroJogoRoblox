@@ -1,0 +1,102 @@
+<div class="h-full w-full relative flex flex-col items-center justify-center text-gray-300 overflow-y-auto p-2 sm:p-4 bg-gradient-to-b from-gray-800 to-gray-900">
+
+  <!-- Main Title & Info -->
+  <div class="text-center mb-2 sm:mb-4">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl text-theme-primary tracking-wider">Pitchutcha</h1>
+    <p class="text-sm sm:text-base text-theme-primary mt-2">Alpha v2.0.0</p>
+    <p class="text-base sm:text-lg text-purple-400 my-2">Highest Floor: {{ highestFloor() }}</p>
+  </div>
+
+  <!-- Primary Actions -->
+  <div class="flex flex-col items-center gap-2 mb-2 sm:mb-4">
+    <button (click)="continueGame()" class="py-2 px-6 text-base sm:py-2 sm:px-8 sm:text-lg md:py-3 md:px-12 md:text-xl btn-pixel btn-pixel-primary">
+      Continue
+    </button>
+     <button (click)="startNewGameClicked()" class="p-1 px-3 text-xs sm:p-2 sm:px-4 sm:text-sm btn-pixel btn-pixel-danger">
+      Start New Game
+    </button>
+  </div>
+
+  <!-- Global Event Banner -->
+  @if (activeEvent(); as event) {
+    <div class="w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl mb-4 p-1 sm:p-2 border-2 border-yellow-400 bg-yellow-900/50 rounded-lg text-center animate-pulse">
+        <h3 class="text-base sm:text-lg text-yellow-300">{{ event.name }} is active!</h3>
+        <p class="text-xs sm:text-sm text-yellow-400">{{ event.description }}</p>
+        <p class="text-xs mt-1">Time remaining: {{ formatTime(timeLeft()) }}</p>
+    </div>
+  }
+
+  <!-- Tabbed Panel -->
+  <div class="w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl min-h-[240px] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary">
+    <!-- Tabs -->
+    <div class="flex-shrink-0 flex border-b-4 border-slate-700">
+      <button (click)="setTab('play')" class="flex-1 text-center p-1 sm:p-2 md:p-3 text-xs sm:text-sm md:text-base btn-pixel" [class]="activeTab() === 'play' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Play</button>
+      <button (click)="setTab('character')" class="flex-1 text-center p-1 sm:p-2 md:p-3 text-xs sm:text-sm md:text-base btn-pixel" [class]="activeTab() === 'character' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Character</button>
+      <button (click)="setTab('community')" class="flex-1 text-center p-1 sm:p-2 md:p-3 text-xs sm:text-sm md:text-base btn-pixel" [class]="activeTab() === 'community' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Community</button>
+      <button (click)="setTab('trade')" class="flex-1 text-center p-1 sm:p-2 md:p-3 text-xs sm:text-sm md:text-base btn-pixel" [class]="activeTab() === 'trade' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Trade</button>
+      <button (click)="setTab('system')" class="flex-1 text-center p-1 sm:p-2 md:p-3 text-xs sm:text-sm md:text-base btn-pixel" [class]="activeTab() === 'system' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">System</button>
+    </div>
+    <!-- Tab Content -->
+    <div class="flex-grow p-2 sm:p-4">
+      @switch (activeTab()) {
+        @case ('play') {
+          <div class="grid grid-cols-2 gap-2 sm:gap-4 h-full">
+            <button (click)="continueGame()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Dungeons</button>
+            <button (click)="startGauntlet()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Gauntlet</button>
+            <button (click)="openChallengeRift()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Challenge Rift</button>
+            <button (click)="openArena()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Arena</button>
+          </div>
+        }
+        @case ('character') {
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 h-full">
+            <button (click)="openStatsBreakdown()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">My Stats</button>
+            <button (click)="openSkillBook()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base" [class.btn-glow-gold]="playerSkillPoints() > 0">Skill Book</button>
+            <button (click)="openAscensionGrid()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base" [class.btn-glow-gold]="playerAscensionPoints() > 0">Ascension Grid</button>
+            <button (click)="openForge()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Forge</button>
+            <button (click)="openTransmutationPanel()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Transmute</button>
+             <button (click)="openAscension()" 
+              class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base"
+              [class.btn-glow-gold]="isMaxLevel()">
+              Ascension
+            </button>
+          </div>
+        }
+        @case ('community') {
+          <div class="grid grid-cols-2 gap-2 sm:gap-4 h-full">
+            <button (click)="openGuildPanel()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Guild</button>
+            <button (click)="openLeaderboard()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">
+              <div class="flex items-center justify-center gap-2">
+                <span>Leaderboard</span>
+                <span class="text-xs text-gray-400">({{ leaderboardTimeLeft() }})</span>
+              </div>
+            </button>
+            <button (click)="openQuestBoard()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Quest Board</button>
+          </div>
+        }
+        @case ('trade') {
+          <div class="grid grid-cols-2 gap-2 sm:gap-4 h-full">
+            <button (click)="openShop()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Shop</button>
+            <button (click)="openGambling()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Gamble</button>
+            <button (click)="openDiamondShop()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Buy Diamonds</button>
+          </div>
+        }
+        @case ('system') {
+          <div class="grid grid-cols-2 gap-2 sm:gap-4 h-full">
+            <button (click)="openCodex()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Codex</button>
+            <button (click)="openThemePanel()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Theme</button>
+            <button (click)="openChangelog()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Changelog</button>
+            <button (click)="openDocumentation()" class="p-2 sm:p-3 btn-pixel btn-pixel-secondary text-xs sm:text-sm md:text-base">Docs</button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* Remove the top/right/bottom positioning from the default button styles in the tab */
+.btn-pixel:not(:disabled):active {
+    top: 0;
+}
+</style>

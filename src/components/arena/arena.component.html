@@ -1,0 +1,159 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-red-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-danger p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <div class="flex items-center gap-4">
+          <h2 class="text-2xl sm:text-3xl text-theme-danger">THE ARENA</h2>
+          <button (click)="openInfo()" class="px-4 py-2 btn-pixel btn-pixel-info text-base">
+            Information
+          </button>
+        </div>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+        
+        <!-- Left Column: Player Info & Details -->
+        <div class="md:col-span-1 flex flex-col gap-4 overflow-y-auto pr-2">
+            <!-- Rank & Resources -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-black/40 border border-slate-700 rounded-md text-center flex flex-col justify-center min-h-[8rem]">
+                    @let rank = getRankTier(playerRank());
+                    <p class="text-gray-400">ARENA RANK</p>
+                    <div class="mt-1">
+                        <p class="text-base font-bold leading-tight" [class]="rank.color">{{ rank.name }}</p>
+                        @if (rank.division) {
+                            <p class="text-base font-bold leading-tight" [class]="rank.color">{{ rank.division }}</p>
+                        }
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">(#{{ playerRank() }})</p>
+                </div>
+                 <div class="p-4 bg-black/40 border border-slate-700 rounded-md text-center flex flex-col justify-center min-h-[8rem]">
+                    <p class="text-gray-400">TICKETS</p>
+                    <p class="text-4xl font-bold text-theme-primary">{{ state().player.arenaTickets }}</p>
+                    <button (click)="buyTicket()" [disabled]="!canAffordTicket()" class="mt-2 px-2 py-1 text-xs btn-pixel btn-pixel-info">
+                      Buy (D 50)
+                    </button>
+                </div>
+                 <div class="p-4 bg-black/40 border border-slate-700 rounded-md text-center flex flex-col justify-center min-h-[8rem]">
+                    <p class="text-gray-400">ARENA MARKS</p>
+                    <p class="text-4xl font-bold text-theme-primary">{{ state().player.arenaMarks }}</p>
+                </div>
+                 <div class="p-4 bg-black/40 border border-slate-700 rounded-md text-center flex flex-col justify-center min-h-[8rem]">
+                    <p class="text-gray-400">WIN STREAK</p>
+                    <p class="text-4xl font-bold text-theme-primary">{{ state().player.arenaWinStreak }}</p>
+                </div>
+            </div>
+
+            <!-- Season Info -->
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+                <h3 class="text-lg text-gray-400 mb-2">{{ currentSeason }}</h3>
+                <p>Time Remaining: <span class="text-yellow-400">{{ seasonTimeLeft() }}</span></p>
+            </div>
+            
+             <!-- Weekly Modifier -->
+            <div class="p-4 bg-black/40 border-2 border-purple-500 rounded-md">
+                @if(currentArenaModifier(); as modifier) {
+                    <h3 class="text-lg text-purple-300 mb-2">Weekly Modifier: {{ modifier.name }}</h3>
+                    <p class="text-sm text-gray-300">{{ modifier.description }}</p>
+                }
+            </div>
+        </div>
+
+        <!-- Right Column: Tabs -->
+        <div class="md:col-span-2 flex flex-col min-h-0">
+            <!-- Tab Buttons -->
+            <div class="flex-shrink-0 flex items-center">
+                <button (click)="setTab('challengers')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'challengers' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Challengers</button>
+                <button (click)="setTab('logs')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'logs' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Battle Logs</button>
+                <button (click)="setTab('shop')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'shop' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Shop</button>
+            </div>
+            <!-- Tab Content -->
+            <div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 mt-2 overflow-y-auto">
+                @switch (currentTab()) {
+                    @case ('challengers') {
+                        @if(opponents().length > 0) {
+                            <div class="flex flex-col gap-2">
+                                @for(opponent of opponents(); track opponent.name) {
+                                    <div class="p-3 bg-slate-900/50 border border-slate-600 rounded-md flex justify-between items-center gap-2">
+                                        <div>
+                                            <p class="font-bold text-lg">{{ opponent.name }}</p>
+                                            <p class="text-sm text-gray-400">Lvl {{ opponent.level }} {{ opponent.playerClass }}</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-gray-400 text-sm">Rank</p>
+                                            <p class="font-bold text-lg text-theme-primary">{{ opponent.rank }}</p>
+                                        </div>
+                                        <div>
+                                            <button (click)="fight(opponent)" [disabled]="state().player.arenaTickets <= 0" class="px-6 py-2 btn-pixel btn-pixel-danger text-lg">Fight (1)</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        } @else {
+                             <div class="flex items-center justify-center h-full text-center text-gray-500">
+                                <p>Searching for opponents...</p>
+                            </div>
+                        }
+                    }
+                    @case ('logs') {
+                        @if (battleLogs().length > 0) {
+                            <div class="flex flex-col gap-2">
+                                @for(log of battleLogs(); track $index) {
+                                    <div class="p-2 bg-slate-900/50 rounded-md text-sm flex justify-between items-center">
+                                        <div>
+                                            <p>vs {{ log.opponent.name }}: 
+                                                <span [class]="log.outcome === 'victory' ? 'text-green-400' : 'text-red-400'">{{ log.outcome | uppercase }}</span>
+                                                (<span [class]="log.rankChange >= 0 ? 'text-green-500' : 'text-red-500'">{{ log.rankChange >= 0 ? '+' : '' }}{{ log.rankChange }}</span>)
+                                                <span class="text-gray-400 ml-4">Rank: {{ log.newRank }}</span>
+                                            </p>
+                                        </div>
+                                        @if(log.isRevengeAvailable) {
+                                            <button (click)="revengeFight(log)" class="px-3 py-1 btn-pixel btn-pixel-yellow text-xs">Revenge</button>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        } @else {
+                             <div class="flex items-center justify-center h-full text-center text-gray-500">
+                                <p>No battles yet.</p>
+                            </div>
+                        }
+                    }
+                    @case ('shop') {
+                        <div class="flex flex-col gap-3">
+                            @for (item of arenaShopItems; track item.id) {
+                                <div class="flex flex-wrap justify-between items-center gap-y-2 p-3 bg-gradient-to-r from-slate-900/50 to-transparent border border-slate-700">
+                                  <div class="flex-1 min-w-[200px]">
+                                    <h3 class="text-lg font-bold" [style.color]="rarityColors[item.rarity]">{{ item.name }}</h3>
+                                    <p class="text-sm text-gray-400">{{ item.description }}</p>
+                                  </div>
+                                  <div class="w-40 text-left md:text-center">
+                                    <span class="text-lg text-theme-primary">{{ item.price }} Marks</span>
+                                  </div>
+                                  <div class="w-32 text-right">
+                                    <button (click)="buyArenaItem(item)" [disabled]="state().player.arenaMarks < item.price" class="px-6 py-2 text-lg btn-pixel btn-pixel-success">
+                                      Buy
+                                    </button>
+                                  </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 flex justify-between items-center">
+        <button (click)="refreshOpponents()" class="py-2 px-6 btn-pixel btn-pixel-secondary text-lg">Refresh List</button>
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-primary text-xl">LEAVE ARENA</button>
+      </div>
+    </div>
+</div>

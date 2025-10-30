@@ -1,0 +1,82 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-cyan-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-info p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-info">CHALLENGE RIFT</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
+        <div class="p-4 bg-black/40 border border-slate-600 rounded-md">
+            <h3 class="text-xl text-theme-primary mb-2">Weekly Challenge: The Swift Blade</h3>
+            <p class="text-base leading-relaxed text-gray-400">
+                This week, all challengers will enter a fixed dungeon as a Level 25 Warrior with a preset loadout. Your own gear, level, and skills are ignored. The goal is to complete all floors as fast as possible. Your completion time will be ranked on the weekly leaderboard. Good luck, adventurer!
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Loadout -->
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+                <h3 class="text-lg text-gray-400 mb-2">Preset Loadout</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><span class="font-bold text-white">Class:</span> Warrior</li>
+                    <li><span class="font-bold text-white">Level:</span> 25</li>
+                    <li><span class="font-bold text-white">Weapon:</span> Steel Longsword</li>
+                    <li><span class="font-bold text-white">Skills:</span> Shield Bash, Retaliate</li>
+                </ul>
+            </div>
+            <!-- Rewards -->
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+                 <h3 class="text-lg text-gray-400 mb-2">Top Rewards</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><span class="font-bold text-yellow-300">Rank 1:</span> 500 Diamonds, 10 Reforging Embers</li>
+                    <li><span class="font-bold text-gray-300">Rank 2-10:</span> 250 Diamonds, 5 Reforging Embers</li>
+                    <li><span class="font-bold text-orange-400">Top 10%:</span> 100 Diamonds</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div>
+            <div class="flex justify-between items-baseline mb-2">
+                <h3 class="text-lg text-gray-400">Leaderboard</h3>
+                <p>Your Best: <span class="text-theme-primary font-bold">{{ formatTime(playerBestTime()) }}</span></p>
+            </div>
+             <div class="p-2 bg-black/40 border-2 border-slate-700 rounded-md">
+                <table class="w-full text-left">
+                    <thead class="bg-black/30 text-gray-400 uppercase text-sm">
+                    <tr>
+                        <th class="p-2 w-16 text-center">Rank</th>
+                        <th class="p-2">Player</th>
+                        <th class="p-2 text-right">Time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for(entry of leaderboard(); track entry.rank) {
+                        <tr class="border-b border-slate-700 last:border-b-0">
+                        <td class="p-2 text-center font-bold" [class]="entry.rank <= 3 ? 'text-theme-primary' : ''">{{ entry.rank }}</td>
+                        <td class="p-2">{{ entry.name }}</td>
+                        <td class="p-2 text-right">{{ formatTime(entry.time) }}</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 flex justify-between items-center">
+        <p class="text-sm text-gray-500">Resets in: 6 Days 14 Hours</p>
+        <button (click)="startRift()" class="py-2 px-8 btn-pixel btn-pixel-success text-xl">
+          BEGIN RIFT
+        </button>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  @if (playerData(); as p) {
+    <!-- Modal Panel -->
+    <div class="w-full max-w-6xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border-pixel border-pixel-primary p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-primary">INSPECT PLAYER</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+        
+        <!-- Left Column: Character Info & Stats (Scrollable) -->
+        <div class="md:col-span-2 w-full flex flex-col gap-4 overflow-y-auto pr-2">
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+                <h3 class="text-2xl font-bold">{{ p.name }}</h3>
+                <p class="text-lg text-gray-400">Lvl {{ p.level }} {{ p.playerClass }}</p>
+                @if (p.prestige > 0) {
+                    <p class="text-purple-400">Prestige {{p.prestige}}</p>
+                }
+            </div>
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md text-center">
+                <p class="text-gray-400">TOTAL POWER</p>
+                <p class="text-4xl text-theme-primary font-bold">{{ p.totalPower }}</p>
+            </div>
+            <div class="p-4 bg-black/40 border border-slate-700 rounded-md">
+                <h4 class="text-lg text-gray-400 mb-2">Attributes</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between"><span>Max Health</span> <span>{{ p.stats.maxHp }}</span></div>
+                    <div class="flex justify-between"><span>Max Energy</span> <span>{{ p.stats.maxEn }}</span></div>
+                    <div class="flex justify-between"><span>Attack</span> <span>{{ p.stats.attack }}</span></div>
+                    <div class="flex justify-between"><span>Defense</span> <span>{{ p.stats.defense }}</span></div>
+                    <div class="flex justify-between"><span>Luck</span> <span>{{ p.stats.luck }}</span></div>
+                    <div class="flex justify-between"><span>Crit Damage</span> <span>+{{ p.stats.critDamage }}%</span></div>
+                </div>
+            </div>
+             <div class="p-4 bg-black/40 border-2 border-slate-700 rounded-md">
+                <h3 class="text-lg text-gray-400 mb-2">ACTIVE BONUSES</h3>
+                @if(p.bonuses.length > 0) {
+                    <ul class="list-disc list-inside space-y-1">
+                        @for(bonus of p.bonuses; track bonus) {
+                            <li>{{ bonus }}</li>
+                        }
+                    </ul>
+                } @else {
+                    <p class="text-gray-500 italic">No special bonuses active.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Right Column: Equipment -->
+        <div class="md:col-span-1 w-full flex flex-col">
+            <h3 class="text-lg text-gray-400 mb-2">EQUIPMENT</h3>
+            <div class="grid grid-cols-3 gap-4 w-full max-w-sm mx-auto">
+                <!-- Row 1 -->
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="weapon() ? rarityBorderColors[weapon()!.rarity] : 'border-slate-700'">@if(weapon(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Weapon</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="helmet() ? rarityBorderColors[helmet()!.rarity] : 'border-slate-700'">@if(helmet(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Helmet</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="shield() ? rarityBorderColors[shield()!.rarity] : 'border-slate-700'">@if(shield(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Shield</span>}</div>
+                
+                <!-- Row 2 -->
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="gloves() ? rarityBorderColors[gloves()!.rarity] : 'border-slate-700'">@if(gloves(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Gloves</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="armor() ? rarityBorderColors[armor()!.rarity] : 'border-slate-700'">@if(armor(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Armor</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="boots() ? rarityBorderColors[boots()!.rarity] : 'border-slate-700'">@if(boots(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Boots</span>}</div>
+                
+                <!-- Row 3 -->
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="ring1() ? rarityBorderColors[ring1()!.rarity] : 'border-slate-700'">@if(ring1(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Ring 1</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="amulet() ? rarityBorderColors[amulet()!.rarity] : 'border-slate-700'">@if(amulet(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Amulet</span>}</div>
+                <div class="relative aspect-square bg-black/40 border-2 rounded-md flex items-center justify-center p-2 text-center text-xs" [class]="ring2() ? rarityBorderColors[ring2()!.rarity] : 'border-slate-700'">@if(ring2(); as item){<div><p>{{item.name}}</p><p class="text-purple-400 mt-1">Power: {{item.power}}</p></div>}@else{<span class="text-gray-500 uppercase">Ring 2</span>}</div>
+            </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  }
+</div>

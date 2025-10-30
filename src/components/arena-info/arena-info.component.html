@@ -1,0 +1,90 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-red-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-danger p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-danger">ARENA INFORMATION</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow min-h-0 overflow-y-auto pr-2 doc-content">
+        <div class="space-y-6 text-base leading-relaxed">
+            <div>
+                <h3 class="text-xl text-theme-primary">How to Play</h3>
+                <p>Welcome to the Arena, a place where champions are forged. Here's how it works:</p>
+                <ul class="list-inside list-disc mt-2 space-y-1 pl-2">
+                    <li><strong class="font-bold text-white">Arena Tickets:</strong> Each battle costs one Arena Ticket. You regenerate tickets over time.</li>
+                    <li><strong class="font-bold text-white">Challengers:</strong> You will be presented with three opponents near your current rank. Defeating them will increase your rank, while losing will decrease it.</li>
+                    <li><strong class="font-bold text-white">Ranking Up:</strong> The higher your opponent's rank, the more you stand to gain upon victory, and the less you'll lose in defeat.</li>
+                    <li><strong class="font-bold text-white">Arena Marks:</strong> Win or lose, every battle earns you Arena Marks, which can be spent in the exclusive Arena Shop. Winning streaks grant bonus Marks!</li>
+                    <li><strong class="font-bold text-white">Revenge:</strong> If you are defeated, you can challenge that opponent to a rematch from the Battle Logs tab without spending a ticket. You only get one chance!</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-xl text-theme-primary">End of Season Rewards</h3>
+                <p>At the end of each season, you will receive rewards based on your final Arena Rank. Strive for the top to earn the most prestigious prizes!</p>
+
+                <table class="mt-4">
+                  <thead>
+                    <tr>
+                      <th>Rank Tier</th>
+                      <th>Rank Required</th>
+                      <th>Rewards</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for(tier of seasonRewards; track tier.rankTier) {
+                      <tr>
+                        <td [class]="tier.color">{{ tier.rankTier }}</td>
+                        <td>{{ tier.rankRange }}</td>
+                        <td>
+                          <ul class="list-disc list-inside">
+                            @for(reward of tier.rewards; track reward) {
+                              <li>{{ reward }}</li>
+                            }
+                          </ul>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+            </div>
+
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+</div>
+
+<style>
+  .doc-content h3 {
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #4a5568;
+  }
+  .doc-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  .doc-content th, .doc-content td {
+    border: 1px solid #4a5568;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .doc-content th {
+    background-color: #2d3748;
+  }
+</style>

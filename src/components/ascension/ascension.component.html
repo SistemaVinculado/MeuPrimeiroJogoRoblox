@@ -1,0 +1,42 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <!-- Modal Panel -->
+    <div class="w-full max-w-2xl flex flex-col bg-gradient-to-b from-purple-950/30 to-slate-800 border-pixel border-pixel-primary p-6 text-gray-300 gap-4 text-center rounded-lg">
+      <!-- Header -->
+      <h2 class="text-3xl text-theme-primary">ASCENSION</h2>
+  
+      <!-- Content -->
+      <div class="my-4 text-left space-y-4">
+        <p class="text-base text-gray-300 leading-relaxed">
+            You have reached Level <span class="text-theme-primary font-bold">{{ requiredLevel() }}</span>. By choosing to ascend, you will start a new path, sacrificing your current level and skills to gain permanent, untold power.
+        </p>
+        <div class="p-4 bg-black/40 border border-slate-600 rounded-md">
+            <h3 class="text-lg text-theme-danger mb-2">Consequences:</h3>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Your Character Level will be reset to 1.</li>
+                <li>Your Skill Tree will be reset, and Skill Points refunded.</li>
+                <li>Your current Gold will be reset to 0.</li>
+            </ul>
+        </div>
+         <div class="p-4 bg-black/40 border border-slate-600 rounded-md">
+            <h3 class="text-lg text-theme-success mb-2">Rewards:</h3>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Your Prestige Level will increase by 1.</li>
+                <li>You will gain <span class="text-theme-primary font-bold">10 Ascension Points</span> to spend on powerful, permanent upgrades (coming soon).</li>
+                <li>Your equipment, inventory, and currencies will be preserved.</li>
+            </ul>
+        </div>
+        <p class="text-center text-lg">Current Prestige: <span class="text-theme-primary font-bold">{{ player().prestige }}</span></p>
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex justify-center gap-4">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-lg">
+          Not Yet
+        </button>
+        <button (click)="ascend()" class="py-2 px-8 btn-pixel btn-pixel-danger text-lg">
+          ASCEND
+        </button>
+      </div>
+    </div>
+</div>

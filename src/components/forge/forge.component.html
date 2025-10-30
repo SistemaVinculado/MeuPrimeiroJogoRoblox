@@ -1,0 +1,128 @@
+<!-- Main Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  @if (player(); as p) {
+    <!-- Modal Panel -->
+    <div class="w-full max-w-5xl h-[90vh] flex flex-col bg-gradient-to-br from-red-950/40 via-gray-800 to-gray-900 border-pixel border-pixel-danger p-4 md:p-6 text-gray-300 gap-4">
+      <!-- Header -->
+      <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-slate-600 pb-3">
+        <h2 class="text-2xl sm:text-3xl text-theme-danger">THE FORGE</h2>
+        <button (click)="close()" class="w-8 h-8 flex items-center justify-center btn-pixel btn-pixel-secondary text-lg">
+          X
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex-shrink-0 flex items-center self-start">
+        <button (click)="setTab('upgrade')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'upgrade' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Upgrade</button>
+        <button (click)="setTab('reforge')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'reforge' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Reforge</button>
+        <button (click)="setTab('infusion')" class="px-4 py-1 text-lg btn-pixel" [class]="currentTab() === 'infusion' ? 'btn-pixel-primary' : 'btn-pixel-secondary'">Infusion</button>
+      </div>
+
+      <!-- Main Content Area -->
+      @switch (currentTab()) {
+        @case ('upgrade') {
+          <div class="flex-grow flex flex-col md:flex-row gap-6 overflow-hidden">
+            <!-- Left Column: Inventory -->
+            <div class="w-full md:w-1/2 flex flex-col">
+              <h3 class="text-sm text-gray-400 mb-2">UPGRADABLE ITEMS (DUST: {{ p.arcaneDust }})</h3>
+              <div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto">
+                @if (upgradableInventory().length > 0) {
+                  <div class="flex flex-col gap-2">
+                    @for (entry of upgradableInventory(); track entry.originalIndex) {
+                      <button (click)="selectUpgradeItem(entry)" class="p-3 text-left w-full bg-slate-900/50 border rounded-md hover:border-yellow-400" [class]="selectedUpgradeItem()?.originalIndex === entry.originalIndex ? 'border-yellow-500 border-2' : 'border-slate-600'">
+                        <p class="font-bold">{{ entry.item.name }} @if(entry.item.upgradeLevel) { +{{ entry.item.upgradeLevel }} }</p>
+                        <p class="text-xs text-gray-400">{{ entry.item.type | uppercase }}</p>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <div class="flex items-center justify-center h-full text-center text-gray-500"><p>No upgradable items in your bag.</p></div>
+                }
+              </div>
+            </div>
+            <!-- Right Column: Details Panel -->
+            <div class="w-full md:w-1/2 bg-black/40 border-2 border-slate-700 rounded-md p-4 flex flex-col">
+              @if (selectedUpgradeItem(); as sel) {
+                <div class="flex flex-col h-full">
+                  <h3 class="text-xl text-theme-primary">{{ sel.item.name }} +{{ sel.item.upgradeLevel || 0 }}</h3>
+                  <p class="text-sm text-gray-400 italic mt-2">{{ sel.item.description }}</p>
+                  <div class="my-4 border-t border-slate-600"></div>
+                  <h4 class="text-lg text-gray-400 mb-2">Next Upgrade</h4>
+                  <div class="p-3 bg-slate-900/50 rounded-md space-y-2">
+                    @if(nextLevelStats(); as stats) { @for(stat of objectKeys(stats); track stat) {
+                      <div class="flex justify-between">
+                        <span>{{ stat.replace('max', 'Max ') }}</span>
+                        <span class="text-green-400">+{{ stats[stat] }}</span>
+                      </div>
+                    }}
+                    <div class="flex justify-between pt-2 border-t border-slate-700/50">
+                      <span>Cost</span>
+                      <span [class]="p.arcaneDust >= upgradeCost() ? 'text-theme-danger' : 'text-red-600'">{{ upgradeCost() }} Arcane Dust</span>
+                    </div>
+                  </div>
+                  <div class="mt-auto pt-4"><button (click)="upgrade()" [disabled]="p.arcaneDust < upgradeCost()" class="w-full py-3 btn-pixel btn-pixel-danger text-xl">Upgrade</button></div>
+                </div>
+              } @else {
+                <div class="flex flex-col items-center justify-center h-full text-center text-gray-500"><p>Select an item to upgrade.</p></div>
+              }
+            </div>
+          </div>
+        }
+        @case ('reforge') {
+            <div class="flex-grow flex flex-col items-center justify-center gap-4 text-center">
+                <p class="max-w-md text-gray-400">Reforging an item will completely re-roll its stats and perks. The item's base type will remain the same. This powerful process requires <span class="text-yellow-400">Reforging Embers</span>.</p>
+                <div class="p-4 bg-black/40 border-2 border-slate-700 rounded-md w-72 h-32 flex items-center justify-center">
+                    @if (selectedReforgeItem(); as sel) {
+                        <span>{{ sel.item.name }}</span>
+                    } @else {
+                        <span class="text-gray-500">Select an item below</span>
+                    }
+                </div>
+                <button (click)="reforge()" [disabled]="true" class="py-3 px-8 btn-pixel btn-pixel-danger text-xl">Reforge (1 Ember)</button>
+                 <p class="text-sm text-gray-500">You have: {{ p.reforgingEmbers }} Embers</p>
+                <div class="w-full flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto">
+                    <div class="grid grid-cols-6 gap-2">
+                        @for (entry of reforgeableInventory(); track entry.originalIndex) {
+                          <button (click)="selectReforgeItem(entry)" class="aspect-square bg-slate-900/50 border rounded-md flex items-center justify-center p-1 text-center text-xs hover:border-yellow-400" [class]="selectedReforgeItem()?.originalIndex === entry.originalIndex ? 'border-yellow-500 border-2' : 'border-slate-600'">
+                            {{ entry.item.name.split(' ')[0] }}
+                          </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        @case ('infusion') {
+            <div class="flex-grow flex flex-col items-center justify-center gap-4 text-center">
+                <p class="text-gray-400">Infusion destroys a Source item to transfer one of its Perks to a Target item.</p>
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-black/40 border-2 border-slate-700 rounded-md w-64 h-32 flex flex-col items-center justify-center">
+                        <h4 class="text-lg">Source (Destroyed)</h4>
+                        @if (infusionSourceItem(); as source) { <span>{{ source.item.name }}</span> }
+                        @else { <span class="text-gray-500">Select Source</span> }
+                    </div>
+                    <span class="text-2xl text-theme-primary">&rarr;</span>
+                     <div class="p-4 bg-black/40 border-2 border-slate-700 rounded-md w-64 h-32 flex flex-col items-center justify-center">
+                        <h4 class="text-lg">Target</h4>
+                        @if (infusionTargetItem(); as target) { <span>{{ target.item.name }}</span> }
+                        @else { <span class="text-gray-500">Select Target</span> }
+                    </div>
+                </div>
+                <button (click)="infuse()" [disabled]="true" class="py-3 px-8 btn-pixel btn-pixel-danger text-xl">Infuse (1 Soul Essence)</button>
+                 <p class="text-sm text-gray-500">You have: {{ p.soulEssence }} Soul Essence</p>
+                <div class="w-full flex gap-4 flex-grow">
+                    <div class="w-1/2 flex flex-col"><h4 class="mb-2">SELECT SOURCE</h4><div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto"><div class="grid grid-cols-4 gap-2">@for (entry of infusionSourceInventory(); track entry.originalIndex) {<button (click)="selectInfusionSource(entry)" class="aspect-square bg-slate-900/50 border rounded-md p-1 text-xs" [class]="infusionSourceItem()?.originalIndex === entry.originalIndex ? 'border-yellow-500 border-2' : 'border-slate-600'">{{ entry.item.name.split(' ')[0] }}</button>}</div></div></div>
+                    <div class="w-1/2 flex flex-col"><h4 class="mb-2">SELECT TARGET</h4><div class="flex-grow bg-black/40 border-2 border-slate-700 rounded-md p-2 overflow-y-auto"><div class="grid grid-cols-4 gap-2">@for (entry of infusionTargetInventory(); track entry.originalIndex) {<button (click)="selectInfusionTarget(entry)" class="aspect-square bg-slate-900/50 border rounded-md p-1 text-xs" [class]="infusionTargetItem()?.originalIndex === entry.originalIndex ? 'border-yellow-500 border-2' : 'border-slate-600'">{{ entry.item.name.split(' ')[0] }}</button>}</div></div></div>
+                </div>
+            </div>
+        }
+      }
+      
+      <!-- Footer -->
+      <div class="flex-shrink-0 pt-4 border-t-2 border-slate-600 text-center">
+        <button (click)="close()" class="py-2 px-8 btn-pixel btn-pixel-secondary text-xl">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  }
+</div>

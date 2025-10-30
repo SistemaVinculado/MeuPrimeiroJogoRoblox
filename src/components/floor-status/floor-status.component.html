@@ -1,0 +1,19 @@
+@if (dungeon(); as d) {
+    <div class="p-1 sm:p-2 md:p-4 bg-theme-panel border-pixel border-pixel-info text-[10px] sm:text-xs md:text-sm">
+      <h2 class="text-sm sm:text-base md:text-lg text-theme-info mb-1 sm:mb-2 md:mb-3 text-center">FLOOR STATUS</h2>
+      <div class="space-y-1 sm:space-y-2">
+        <div class="flex justify-between">
+          <span>Floor Level:</span>
+          <span class="font-bold">{{ d.level }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Enemies Remaining:</span>
+          <span class="font-bold">{{ enemiesLeft() }} / {{ d.initialEnemyCount }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Chests Remaining:</span>
+          <span class="font-bold">{{ chestsLeft() }} / {{ d.initialChestCount }}</span>
+        </div>
+      </div>
+    </div>
+}

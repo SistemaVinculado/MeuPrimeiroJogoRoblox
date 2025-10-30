@@ -1,0 +1,135 @@
+<div class="relative w-full h-full bg-black border-4 border-gray-600 p-1">
+  @if (state().status === 'loading') {
+    <div class="w-full h-full flex items-center justify-center text-center text-2xl text-yellow-400 animate-pulse">LOADING...</div>
+  } @else if (grid().length > 0) {
+    <!-- Anomaly Display -->
+    @if(state().activeAnomalies; as anomalies) {
+      <div class="absolute top-2 left-2 z-10 p-2 bg-black/70 border border-purple-500 rounded-md max-w-xs">
+        @for(anomaly of anomalies; track anomaly.id) {
+          <div>
+            <h4 class="text-purple-300 font-bold">{{ anomaly.name }}</h4>
+            <p class="text-xs text-purple-200">{{ anomaly.description }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="w-full h-full grid" [style.grid-template-columns]="'repeat(' + grid()[0].length + ', minmax(0, 1fr))'" [style.grid-template-rows]="'repeat(' + grid().length + ', minmax(0, 1fr))'">
+        @for (row of grid(); track $index; let y = $index) {
+            @for (cell of row; track $index; let x = $index) {
+                <div class="relative">
+                    @if (visibilityGrid()[y][x]) {
+                        <!-- Base Tile -->
+                        @switch (cell) {
+                            @case ('#') {
+                                <div class="w-full h-full bg-slate-800 border-2 border-slate-900/50 box-border">
+                                    <div class="w-full h-full border-t-4 border-slate-600/50 box-border"></div>
+                                </div>
+                            }
+                            @case ('.') {
+                                <div class="w-full h-full bg-slate-700/50 border-2 border-slate-800/50 box-border"></div>
+                            }
+                            @case ('^') { <!-- Hidden Trap -->
+                                <div class="w-full h-full bg-slate-700/50 border-2 border-slate-800/50 box-border"></div>
+                            }
+                             @case ('C') { <!-- Cursed Chest -->
+                                <div class="w-full h-full bg-purple-900 border-2 border-purple-950 flex items-center justify-center p-1 box-border animate-pulse">
+                                    <div class="w-full h-full bg-purple-700 border-t-4 border-purple-600"></div>
+                                </div>
+                            }
+                            @case ('A') { <!-- Altar -->
+                                <div class="w-full h-full bg-slate-700/50 border-2 border-slate-800/50 flex items-center justify-center text-purple-300 box-border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3/4 h-3/4 animate-portal-pulse" viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM8 8a2 2 0 114 0v3a2 2 0 11-4 0V8z" />
+                                    </svg>
+                                </div>
+                            }
+                            @case ('H') { <!-- Fountain -->
+                                <div class="w-full h-full bg-slate-700/50 border-2 border-slate-800/50 flex items-center justify-center text-cyan-300 box-border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3/4 h-3/4 animate-pulse" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            }
+                            @case ('T') {
+                                <div class="w-full h-full bg-yellow-900 border-2 border-yellow-950 flex items-center justify-center p-1 box-border">
+                                    <div class="w-full h-full bg-yellow-700 border-t-4 border-yellow-600"></div>
+                                </div>
+                            }
+                            @case ('S') {
+                                @if (isFinalLevel()) {
+                                    <!-- Red Portal (Victory) -->
+                                    <div class="w-full h-full bg-red-900 border-2 border-red-950 flex items-center justify-center box-border">
+                                        <div class="w-3/4 h-3/4 bg-black/50 shadow-inner animate-portal-pulse portal-red"></div>
+                                    </div>
+                                } @else {
+                                    <!-- Purple Portal (Next Floor) -->
+                                    <div class="w-full h-full bg-purple-900 border-2 border-purple-950 flex items-center justify-center box-border">
+                                        <div class="w-3/4 h-3/4 bg-black/50 shadow-inner animate-portal-pulse portal-purple"></div>
+                                    </div>
+                                }
+                            }
+                        }
+
+                        <!-- Player -->
+                        @if (player().position.x === x && player().position.y === y) {
+                            @let pVis = playerVisuals();
+                            <div class="absolute inset-0 flex items-center justify-center p-1 animate-hero-bob">
+                                <div class="relative w-full h-full">
+                                    <!-- Shield -->
+                                    @if (player().equippedShieldId !== 'default') {
+                                        <div class="absolute -bottom-1 -right-1 w-2/3 h-2/3 rounded-sm border border-white/50 flex items-center justify-center text-xs lg:text-base font-black transform -rotate-12"
+                                            [class]="pVis.shield.bgColor + ' ' + pVis.shield.textColor + ' ' + pVis.shield.shadow">
+                                            {{ pVis.shieldAbbr }}
+                                        </div>
+                                    }
+
+                                    <!-- Player Body -->
+                                    <div class="absolute inset-0 rounded-full border-2 border-white/20 flex items-center justify-center text-sm lg:text-xl font-black"
+                                        [class]="pVis.player.bgColor + ' ' + pVis.player.textColor + ' ' + pVis.player.shadow">
+                                        {{ pVis.playerAbbr }}
+                                    </div>
+
+                                    <!-- Weapon -->
+                                    @if (player().equippedWeaponId !== 'default') {
+                                        <div class="absolute -top-1 -left-1 w-2/3 h-2/3 rounded-sm border border-white/50 flex items-center justify-center text-xs lg:text-base font-black transform rotate-12"
+                                            [class]="pVis.weapon.bgColor + ' ' + pVis.weapon.textColor + ' ' + pVis.weapon.shadow">
+                                            {{ pVis.weaponAbbr }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Enemies -->
+                        @if (getEnemyAt(x, y); as enemy) {
+                            <div class="absolute inset-0 flex items-center justify-center p-1" [class.animate-echo-pulse]="enemy.isEcho" [class.animate-nemesis-glow]="enemy.isNemesis">
+                                <div class="w-full h-full rounded-full border-2 border-black/30 flex items-center justify-center text-sm lg:text-xl font-black"
+                                    [class]="enemy.visuals.bgColor + ' ' + enemy.visuals.textColor">
+                                    {{ enemy.visuals.char }}
+                                </div>
+                            </div>
+                        }
+                    } @else {
+                        <div class="w-full h-full bg-black border-2 border-slate-900/50 box-border"></div>
+                    }
+                </div>
+            }
+        }
+    </div>
+  }
+</div>
+
+<style>
+@keyframes nemesis-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px #ef4444) brightness(1.1);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px #f87171) brightness(1.3);
+  }
+}
+.animate-nemesis-glow {
+  animation: nemesis-glow 2.5s ease-in-out infinite;
+}
+</style>
