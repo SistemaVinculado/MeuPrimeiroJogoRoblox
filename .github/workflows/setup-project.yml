@@ -1,0 +1,49 @@
+name: Setup Roblox-TS Project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run setup commands to create config files
+        run: |
+          npm init -y
+          npm install --save-dev @rbxts/compiler @rbxts/types rojo-rbx
+          npx rbxtsc --init --yes
+          npx rojo init
+
+      - name: Overwrite default.project.json for roblox-ts
+        run: |
+          echo '{
+            "name": "MeuPrimeiroJogoRoblox",
+            "tree": {
+              "$className": "DataModel",
+              "ReplicatedStorage": {
+                "$path": "out/shared"
+              },
+              "ServerScriptService": {
+                "$path": "out/server"
+              },
+              "StarterPlayer": {
+                "StarterPlayerScripts": {
+                  "$path": "out/client"
+                }
+              }
+            }
+          }' > default.project.json
+
+      - name: Commit generated files to repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: Setup initial roblox-ts and rojo files"
+          branch: main
