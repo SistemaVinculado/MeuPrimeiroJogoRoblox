@@ -1,4 +1,4 @@
-name: Setup Roblox-TS Project
+name: Setup Roblox-TS Project (DEBUG MODE)
 
 on:
   workflow_dispatch:
@@ -15,32 +15,26 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Run setup commands to create config files
+      # --- INÍCIO DOS COMANDOS DE DIAGNÓSTICO ---
+      - name: 1. Check for hidden config files
+        run: ls -la
+
+      - name: 2. Show active NPM configuration
+        run: npm config list
+
+      # --- FIM DOS COMANDOS DE DIAGNÓSTICO ---
+
+      - name: 3. Attempt to install dependencies (This will likely fail)
         run: |
           npm init -y
           npm install --save-dev @rbxts/compiler @rbxts/types rojo-rbx
           npx rbxtsc --init --yes
           npx rojo init
 
+      # O resto do workflow não vai rodar se o passo 3 falhar, o que é esperado.
       - name: Overwrite default.project.json for roblox-ts
         run: |
-          echo '{
-            "name": "MeuPrimeiroJogoRoblox",
-            "tree": {
-              "$className": "DataModel",
-              "ReplicatedStorage": {
-                "$path": "out/shared"
-              },
-              "ServerScriptService": {
-                "$path": "out/server"
-              },
-              "StarterPlayer": {
-                "StarterPlayerScripts": {
-                  "$path": "out/client"
-                }
-              }
-            }
-          }' > default.project.json
+          echo '{}' > default.project.json
 
       - name: Commit generated files to repository
         uses: stefanzweifel/git-auto-commit-action@v4
