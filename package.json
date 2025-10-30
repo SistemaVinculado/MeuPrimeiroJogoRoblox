@@ -9,7 +9,7 @@
     "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "rxjs": "^7.8.2",
+    "rxjs": "^7.8.1",
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/compiler": "^20.3.0",
